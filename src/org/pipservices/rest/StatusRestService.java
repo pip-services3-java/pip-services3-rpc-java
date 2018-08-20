@@ -1,4 +1,4 @@
-package org.pipservices.status;
+package org.pipservices.rest;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -11,7 +11,6 @@ import org.pipservices.components.info.ContextInfo;
 import org.pipservices.commons.refer.Descriptor;
 import org.pipservices.commons.refer.IReferences;
 import org.pipservices.commons.refer.ReferenceException;
-import org.pipservices.rest.RestService;
 
 public class StatusRestService extends RestService{
 	

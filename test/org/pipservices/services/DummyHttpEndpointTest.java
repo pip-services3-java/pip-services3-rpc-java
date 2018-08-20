@@ -1,4 +1,4 @@
-package org.pipservices.rest;
+package org.pipservices.services;
 
 import org.junit.Test;
 
@@ -23,6 +23,7 @@ import org.pipservices.commons.refer.References;
 import org.pipservices.Dummy;
 import org.pipservices.DummyController;
 import org.pipservices.example.DummyCommandableHttpService;
+import org.pipservices.rest.HttpEndpoint;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;

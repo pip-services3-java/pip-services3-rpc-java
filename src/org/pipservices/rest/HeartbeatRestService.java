@@ -1,11 +1,10 @@
-package org.pipservices.status;
+package org.pipservices.rest;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 
 import org.pipservices.commons.config.ConfigParams;
 import org.pipservices.commons.errors.ConfigException;
-import org.pipservices.rest.RestService;
 
 public class HeartbeatRestService extends RestService{
 	

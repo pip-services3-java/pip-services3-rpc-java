@@ -1,4 +1,4 @@
-package org.pipservices.rest;
+package org.pipservices.clients;
 
 
 import static org.junit.Assert.assertTrue;

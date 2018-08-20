@@ -5,7 +5,7 @@ import org.pipservices.commons.data.FilterParams;
 import org.pipservices.commons.data.PagingParams;
 import org.pipservices.commons.refer.Descriptor;
 import org.pipservices.Dummy;
-import org.pipservices.direct.DirectClient;
+import org.pipservices.clients.DirectClient;
 
 public class DummyDirectClient extends DirectClient<IDummyController> implements IDummyClient{
 

@@ -11,6 +11,7 @@ import org.pipservices.components.connect.ConnectionParams;
 import org.pipservices.components.count.*;
 import org.pipservices.commons.errors.*;
 import org.pipservices.components.log.CompositeLogger;
+import org.pipservices.connect.HttpConnectionResolver;
 import org.pipservices.commons.refer.*;
 import org.pipservices.commons.run.IOpenable;
 
@@ -35,9 +36,6 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
     protected DependencyResolver _dependencyResolver = new DependencyResolver(_defaultConfig);
     
     protected String _url;
-    
-//    protected RouteBuilder _routeBuilder;
-//    
     protected HttpServer _server;
     
     private List<IRegisterable> _registrations = new ArrayList<IRegisterable>();

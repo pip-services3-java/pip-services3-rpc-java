@@ -111,7 +111,6 @@ public abstract class RestService<R> implements IOpenable, IConfigurable, IRefer
 		return _counters.beginTiming(name + ".exec_time");
 	}
 	
-    @SuppressWarnings("restriction")
 	public void open(String correlationId) throws ApplicationException {
     	if (isOpened()) return;
     	if (_endpoint == null) 	{
@@ -128,7 +127,6 @@ public abstract class RestService<R> implements IOpenable, IConfigurable, IRefer
     		}
     }
 
-	@SuppressWarnings("restriction")
     public void close(String correlationId) throws ApplicationException {
 		if (!isOpened())
 	        {

@@ -1,4 +1,4 @@
-package org.pipservices.direct;
+package org.pipservices.clients;
 
 import org.pipservices.commons.config.ConfigParams;
 import org.pipservices.commons.config.IConfigurable;

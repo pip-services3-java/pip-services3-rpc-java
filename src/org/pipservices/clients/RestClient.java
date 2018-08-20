@@ -1,4 +1,4 @@
-package org.pipservices.rest;
+package org.pipservices.clients;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -23,6 +23,7 @@ import org.pipservices.commons.data.FilterParams;
 import org.pipservices.commons.data.PagingParams;
 import org.pipservices.commons.errors.*;
 import org.pipservices.components.log.*;
+import org.pipservices.connect.HttpConnectionResolver;
 import org.pipservices.commons.refer.*;
 import org.pipservices.commons.run.*;
 import org.pipservices.components.connect.*;
@@ -133,9 +134,6 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
     {
         if (value == null) return null;
         String result = JsonConverter.toJson(value);
-//??????????        
-//      var content = JsonConverter.ToJson(value);
-//      var result = new StringContent(content, Encoding.UTF8, "application/json");
         return result;
     }
 
@@ -331,75 +329,5 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
         request.setEntity(entity);
                        
         return (T) executeRequest(correlationId, request);
-    }   
-    
-//    private static <T> T extractContentEntity(Class<T> type, String correlationId, ClientRequestContext context) throws BadRequestException
-//    {
-//        String value = context.getEntity().toString();
-//
-//        try
-//        {
-//            return JsonConverter.fromJson(type, value);
-//        }
-//        catch (Exception ex)
-//        {
-//            throw new BadRequestException(correlationId, "Unexpected protocol format", ex.toString());
-//        }
-//    }
-
-//    protected <T> T execute(String correlationId, HttpMethod method, String route, FilterParams filter, PagingParams paging)
-//    {
-//        route = addCorrelationId(route, correlationId);
-//        var uri = CreateRequestUri(route);
-//
-//        using (var response = await ExecuteRequestAsync(correlationId, method, uri))
-//        {
-//            return extractContentEntity(correlationId, response.Content);
-//        }
-//    }
-//
-//    private static async Task<string> ExtractContentEntityAsync(string correlationId, HttpContent content)
-//    {
-//        var value = await content.ReadAsStringAsync();
-//
-//        try
-//        {
-//            return value;
-//        }
-//        catch (Exception ex)
-//        {
-//            throw new BadRequestException(correlationId, null, "Unexpected protocol format", ex);
-//        }
-//    }
-//
-//    protected async Task<string> ExecuteStringAsync(
-//        string correlationId, HttpMethod method, string route)
-//    {
-//        route = AddCorrelationId(route, correlationId);
-//        var uri = CreateRequestUri(route);
-//
-//        using (var response = await ExecuteRequestAsync(correlationId, method, uri))
-//        {
-//            return await ExtractContentEntityAsync(correlationId, response.Content);
-//        }
-//    }
-//
-//    protected async Task<T> ExecuteAsync<T>(
-//        string correlationId, HttpMethod method, string route, object requestEntity)
-//        where T : class
-//    {
-//        route = AddCorrelationId(route, correlationId);
-//        var uri = CreateRequestUri(route);
-//
-//        using (var requestContent = CreateEntityContent(requestEntity))
-//        {
-//            using (var response = await ExecuteRequestAsync(correlationId, method, uri, requestContent))
-//            {
-//                return await ExtractContentEntityAsync<T>(correlationId, response.Content);
-//            }
-//        }
-//    }
-    
-    
-    
+    }       
 }

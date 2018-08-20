@@ -3,14 +3,9 @@ package org.pipservices.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.function.Function;
-
-import javax.ws.rs.core.Request;
-
-import org.glassfish.jersey.message.internal.InboundMessageContext;
-import org.glassfish.jersey.server.ContainerRequest;
 import org.pipservices.commons.commands.*;
 import org.pipservices.components.count.*;
+import org.pipservices.connect.HttpConnectionResolver;
 import org.pipservices.commons.refer.ReferenceException;
 import org.pipservices.commons.run.Parameters;
 

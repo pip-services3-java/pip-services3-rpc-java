@@ -1,4 +1,4 @@
-package org.pipservices.rest;
+package org.pipservices.clients;
 
 import org.junit.Test;
 import org.pipservices.commons.config.ConfigParams;

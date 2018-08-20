@@ -7,11 +7,7 @@ import org.pipservices.commons.data.FilterParams;
 import org.pipservices.commons.data.PagingParams;
 import org.pipservices.commons.errors.ApplicationException;
 import org.pipservices.Dummy;
-import org.pipservices.rest.CommandableHttpClient;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import org.pipservices.clients.CommandableHttpClient;
 
 public class DummyCommandableHttpClient extends CommandableHttpClient implements IDummyClient{
 

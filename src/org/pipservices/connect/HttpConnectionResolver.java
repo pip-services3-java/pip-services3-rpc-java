@@ -1,4 +1,4 @@
-package org.pipservices.rest;
+package org.pipservices.connect;
 
 import java.net.URI;
 import java.util.List;
