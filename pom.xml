@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.pipservices</groupId>
-  <artifactId>pip-services-rpc-java</artifactId>
+  <artifactId>pip-services-rpc</artifactId>
   <version>3.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -38,6 +38,23 @@
     <developerConnection>scm:git:git@github.com:pip-services-java/pip-services-rpc-java.git</developerConnection>
     <url>https://github.com/pip-services-java/pip-services-rpc-java</url>
   </scm>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
