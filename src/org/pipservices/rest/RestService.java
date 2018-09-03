@@ -94,7 +94,7 @@ public abstract class RestService<R> implements IOpenable, IConfigurable, IRefer
         return endpoint;
     }
 
-    public boolean isOpened()
+    public boolean isOpen()
     {
         return _opened;
     }
@@ -112,7 +112,7 @@ public abstract class RestService<R> implements IOpenable, IConfigurable, IRefer
 	}
 	
 	public void open(String correlationId) throws ApplicationException {
-    	if (isOpened()) return;
+    	if (isOpen()) return;
     	if (_endpoint == null) 	{
     		_endpoint = createLocalEndpoint();
     		_endpoint.register(this);
@@ -128,7 +128,7 @@ public abstract class RestService<R> implements IOpenable, IConfigurable, IRefer
     }
 
     public void close(String correlationId) throws ApplicationException {
-		if (!isOpened())
+		if (!isOpen())
 	        {
 	            if (_endpoint == null)
 	            {

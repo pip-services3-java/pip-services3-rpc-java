@@ -15,7 +15,7 @@ public class DummyDirectClient extends DirectClient<IDummyController> implements
     }
 	
 	@Override
-	public boolean isOpened() {
+	public boolean isOpen() {
 		// TODO Auto-generated method stub
 		return false;
 	}

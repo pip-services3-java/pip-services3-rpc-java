@@ -94,7 +94,7 @@ public class DummyHttpEndpointTest {
 
         public void itShouldBeOpened()
         {
-        	assertTrue(_httpEndpoint.isOpened());        	
+        	assertTrue(_httpEndpoint.isOpen());        	
         }
 
         public void itShouldCreateDummy() throws IOException

@@ -63,7 +63,7 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
     }
 
 	@Override
-	public boolean isOpened() {
+	public boolean isOpen() {
 		return _server != null;
 	}
 
@@ -71,7 +71,7 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 	@Override
 	public void open(String correlationId) throws ApplicationException {
 		
-		if (isOpened()) return;
+		if (isOpen()) return;
 		
 		ConnectionParams connection = _connectionResolver.resolve(correlationId);
         String protocol = connection.getProtocol("http");

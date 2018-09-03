@@ -23,7 +23,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="/pip-services-components-java"/>
-	<classpathentry kind="src" path="/pip-services-messages-java"/>
 	<classpathentry kind="output" path="obj/src"/>
 </classpath>

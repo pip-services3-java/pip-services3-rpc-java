@@ -94,7 +94,7 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
 		return _counters.beginTiming(name + ".call_time");
 	}
 
-    public boolean isOpened() {
+    public boolean isOpen() {
     	return _client != null && _resource != null;
     }
     
