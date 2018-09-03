@@ -142,7 +142,7 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
 	private URI createRequestUri(String route) {
 		StringBuilder builder = new StringBuilder(_url);
 
-		if (HttpConnectionResolver.isNullOrEmpty(_route)) {
+		if (_route != null && _route.trim().length() > 0) {
 			if (_route.charAt(0) != '/')
 				builder.append('/');
 			builder.append(_route);

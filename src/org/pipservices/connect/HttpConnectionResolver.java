@@ -30,7 +30,7 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 			throw new ConfigException(correlationId, "NO_CONNECTION", "HTTP connection is not set");
 
 		String uri = connection.getUri();
-		if (!isNullOrEmpty(uri))
+		if (uri != null && uri.trim().length() > 0)
 			return;
 
 		String protocol = connection.getProtocol("http");
@@ -48,19 +48,8 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 			throw new ConfigException(correlationId, "NO_PORT", "Connection port is not set");
 	}
 
-	public static boolean isNull(String str) {
-		return str == null ? true : false;
-	}
-
-	public static boolean isNullOrEmpty(String param) {
-		if (isNull(param) || param.trim().length() == 0) {
-			return true;
-		}
-		return false;
-	}
-
 	private void updateConnection(ConnectionParams connection) {
-		if (isNullOrEmpty(connection.getUri())) {
+		if (connection.getUri() == null || connection.getUri().trim().length() == 0) {
 			String uri = connection.getProtocol() + "://" + connection.getHost();
 			if (connection.getPort() != 0)
 				uri += ":" + connection.getPort();
