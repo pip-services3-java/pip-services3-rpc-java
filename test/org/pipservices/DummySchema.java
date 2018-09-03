@@ -1,4 +1,4 @@
-package org.pipservices.example;
+package org.pipservices;
 
 import org.pipservices.commons.convert.TypeCode;
 import org.pipservices.commons.validate.ObjectSchema;

@@ -1,7 +1,12 @@
-package org.pipservices.rest;
+package org.pipservices.services;
 
 import java.io.IOException;
-import org.glassfish.jersey.server.ContainerResponse;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.process.Inflector;
+import org.glassfish.jersey.server.model.Resource;
 import org.pipservices.commons.config.*;
 import org.pipservices.components.count.*;
 import org.pipservices.commons.errors.*;
@@ -10,8 +15,9 @@ import org.pipservices.commons.refer.*;
 import org.pipservices.commons.run.*;
 import com.sun.net.httpserver.*;
 
-public abstract class RestService<R> implements IOpenable, IConfigurable, IReferenceable, IUnreferenceable, IRegisterable {
-	
+public abstract class RestService
+		implements IOpenable, IConfigurable, IReferenceable, IUnreferenceable, IRegisterable {
+
 //	private final static ConfigParams _defaultConfig = ConfigParams.fromTuples(
 //		"connection.protocol", "http",
 //		"connection.host", "0.0.0.0",
@@ -20,12 +26,10 @@ public abstract class RestService<R> implements IOpenable, IConfigurable, IRefer
 //		"connection.connect_timeout", 60000,
 //		"connection.debug", true
 //	);
-	
-	private static final ConfigParams _defaultConfig = ConfigParams.fromTuples(
-            "base_route", "",
-            "dependencies.endpoint", "pip-services:endpoint:http:*:1.0"
-        );
-		
+
+	private static final ConfigParams _defaultConfig = ConfigParams.fromTuples("base_route", "",
+			"dependencies.endpoint", "pip-services:endpoint:http:*:1.0");
+
 	@SuppressWarnings("restriction")
 	protected HttpServer _server;
 	protected DependencyResolver _dependencyResolver = new DependencyResolver(_defaultConfig);
@@ -34,159 +38,151 @@ public abstract class RestService<R> implements IOpenable, IConfigurable, IRefer
 	protected String _url;
 	protected String _route;
 	protected HttpEndpoint _endpoint;
-	
+
 	private ConfigParams _config;
-    private IReferences _references;
-    private boolean _localEndpoint;
-    private boolean _opened;
+	private IReferences _references;
+	private boolean _localEndpoint;
+	private boolean _opened;
 
+	protected RestService() {
+	}
 
-	protected RestService() { }
-	
 	public void setReferences(IReferences references) throws ReferenceException, ConfigException {
 		_logger.setReferences(references);
 		_counters.setReferences(references);
 		_dependencyResolver.setReferences(references);
-		
+
 		_references = references;
-                        
-        // Get endpoint
-        _endpoint = (HttpEndpoint)_dependencyResolver.getOneOptional("endpoint");
-        _localEndpoint = _endpoint == null;
 
-        // Or create a local one
-        if (_endpoint == null)
-            _endpoint = createLocalEndpoint();
+		// Get endpoint
+		_endpoint = (HttpEndpoint) _dependencyResolver.getOneOptional("endpoint");
+		_localEndpoint = _endpoint == null;
 
-        // Add registration callback to the endpoint
-        
-        _endpoint.register(this);
+		// Or create a local one
+		if (_endpoint == null)
+			_endpoint = createLocalEndpoint();
+
+		// Add registration callback to the endpoint
+
+		_endpoint.register(this);
 	}
 
 	public void configure(ConfigParams config) throws ConfigException {
-		
-		config = config.setDefaults(_defaultConfig);		
+
+		config = config.setDefaults(_defaultConfig);
 		_dependencyResolver.configure(config);
 
-        _route = config.getAsStringWithDefault("base_route", _route);
+		_route = config.getAsStringWithDefault("base_route", _route);
 	}
-	
-	public void unsetReferences()
-    {
-        // Remove registration callback from endpoint
-        if (_endpoint != null)
-        {
-            _endpoint.unregister(this);
-            _endpoint = null;
-        }
-    }
 
-    private HttpEndpoint createLocalEndpoint() throws ConfigException, ReferenceException 
-    {
-    	HttpEndpoint endpoint = new HttpEndpoint();
+	public void unsetReferences() {
+		// Remove registration callback from endpoint
+		if (_endpoint != null) {
+			_endpoint.unregister(this);
+			_endpoint = null;
+		}
+	}
 
-        if (_config != null)
-            endpoint.configure(_config);
+	private HttpEndpoint createLocalEndpoint() throws ConfigException, ReferenceException {
+		HttpEndpoint endpoint = new HttpEndpoint();
 
-        if (_references != null)
-            endpoint.setReferences(_references);
+		if (_config != null)
+			endpoint.configure(_config);
 
-        return endpoint;
-    }
+		if (_references != null)
+			endpoint.setReferences(_references);
 
-    public boolean isOpen()
-    {
-        return _opened;
-    }
-	
-	
+		return endpoint;
+	}
+
+	public boolean isOpen() {
+		return _opened;
+	}
+
 	/**
 	 * Does instrumentation of performed business method by counting elapsed time.
+	 * 
 	 * @param correlationId the unique id to identify distributed transaction
-	 * @param name the name of called business method
+	 * @param name          the name of called business method
 	 * @return ITiming instance to be called at the end of execution of the method.
 	 */
 	protected Timing instrument(String correlationId, String name) {
 		_logger.trace(correlationId, "Executing %s method", name);
 		return _counters.beginTiming(name + ".exec_time");
 	}
-	
+
 	public void open(String correlationId) throws ApplicationException {
-    	if (isOpen()) return;
-    	if (_endpoint == null) 	{
-    		_endpoint = createLocalEndpoint();
-    		_endpoint.register(this);
-    		_localEndpoint = true;
-    		}
-    	if (_localEndpoint) {
-    		_endpoint.open(correlationId);
-    		
-    	        }
-    	else{
-    		_opened = true;
-    		}
-    }
+		if (isOpen()) return;
+		
+		if (_endpoint == null) {
+			_endpoint = createLocalEndpoint();
+			_endpoint.register(this);
+			_localEndpoint = true;
+		}
+		
+		if (_localEndpoint) {
+			_endpoint.open(correlationId);
+		} else {
+			_opened = true;
+		}
+	}
 
-    public void close(String correlationId) throws ApplicationException {
-		if (!isOpen())
-	        {
-	            if (_endpoint == null)
-	            {
-	                throw new InvalidStateException(correlationId, "NO_ENDPOINT", "HTTP endpoint is missing");
-	            }
-	
-	            if (_localEndpoint)
-	            {
-	                _endpoint.close(correlationId);
-	            }
-	
-	            _opened = false;
-	        }
- }
-	
+	public void close(String correlationId) throws ApplicationException {
+		if (!isOpen()) {
+			if (_endpoint == null) {
+				throw new InvalidStateException(correlationId, "NO_ENDPOINT", "HTTP endpoint is missing");
+			}
 
-    protected void sendError(ContainerResponse response, Exception ex) throws IOException
-    {
-        HttpResponseSender.sendError(response, ex);
-    }
+			if (_localEndpoint) {
+				_endpoint.close(correlationId);
+			}
 
-    protected void sendResult(ContainerResponse response, Object result) throws IOException
-    {
-        HttpResponseSender.sendResult(response, result);
-    }
+			_opened = false;
+		}
+	}
 
-    protected void sendEmptyResult(ContainerResponse response) throws IOException
-    {
-        HttpResponseSender.sendEmptyResult(response);
-    }
+	protected Response sendError(Exception ex) {
+		return HttpResponseSender.sendError(ex);
+	}
 
-    protected void sendCreatedResult(ContainerResponse response, Object result) throws IOException
-    {
-        HttpResponseSender.sendCreatedResult(response, result);
-    }
+	protected Response sendResult(Object result) {
+		return HttpResponseSender.sendResult(result);
+	}
 
-    protected void sendDeleted(ContainerResponse response, Object result) throws IOException
-    {
-        HttpResponseSender.sendDeletedResult(response, result);
-    }
+	protected Response sendEmptyResult() {
+		return HttpResponseSender.sendEmptyResult();
+	}
 
-    protected void registerRoute(String method, String route, IActionable action)
-    {
-    	
-        if (_endpoint == null) return;
-        
+	protected Response sendCreatedResult(Object result) {
+		return HttpResponseSender.sendCreatedResult(result);
+	}
 
-        if (route.charAt(0) != '/')
-            route = "/" + route;
+	protected Response sendDeleted(Object result) {
+		return HttpResponseSender.sendDeletedResult(result);
+	}
 
-        if (_route != null && _route.length() > 0) {
-            String baseRoute = _route;
-            if ( baseRoute.charAt(0) != '/')
-                baseRoute = "/" + baseRoute;
-            route = baseRoute + route;
-        }
+	protected void registerRoute(String method, String route, Inflector<ContainerRequestContext, Response> action) {
+		if (_endpoint == null)
+			return;
 
-        _endpoint.registerRoute(method, route, action);
+		if (route.charAt(0) != '/')
+			route = "/" + route;
 
-    }  
+		if (_route != null && _route.length() > 0) {
+			String baseRoute = _route;
+			if (baseRoute.charAt(0) != '/')
+				baseRoute = "/" + baseRoute;
+			route = baseRoute + route;
+		}
+
+		_endpoint.registerRoute(method, route, action);
+	}
+
+	protected void registerResource(Resource resource) {
+		if (_endpoint == null)
+			return;
+
+		_endpoint.registerResource(resource);
+	}
+
 }

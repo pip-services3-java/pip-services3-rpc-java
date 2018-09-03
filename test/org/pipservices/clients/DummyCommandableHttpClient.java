@@ -1,4 +1,4 @@
-package org.pipservices.example;
+package org.pipservices.clients;
 
 import java.io.IOException;
 

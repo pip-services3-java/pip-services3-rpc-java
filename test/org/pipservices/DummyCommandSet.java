@@ -1,4 +1,4 @@
-package org.pipservices.example;
+package org.pipservices;
 
 import org.pipservices.commons.commands.*;
 import org.pipservices.commons.data.AnyValueMap;
@@ -6,7 +6,6 @@ import org.pipservices.commons.data.FilterParams;
 import org.pipservices.commons.data.PagingParams;
 import org.pipservices.commons.run.Parameters;
 import org.pipservices.commons.validate.*;
-import org.pipservices.Dummy;
 
 public class DummyCommandSet extends CommandSet{
 	

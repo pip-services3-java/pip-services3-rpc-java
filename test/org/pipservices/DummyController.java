@@ -6,8 +6,6 @@ import org.pipservices.commons.commands.CommandSet;
 import org.pipservices.commons.commands.ICommandable;
 import org.pipservices.commons.data.*;
 import org.pipservices.commons.errors.*;
-import org.pipservices.example.DummyCommandSet;
-import org.pipservices.example.IDummyController;
 
 public class DummyController implements IDummyController, ICommandable {
 	private Object _lock = new Object();

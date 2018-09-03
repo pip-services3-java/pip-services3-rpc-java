@@ -11,6 +11,7 @@ import org.pipservices.commons.refer.Descriptor;
 import org.pipservices.commons.refer.References;
 import org.pipservices.DummyController;
 import org.pipservices.example.*;
+import org.pipservices.services.DummyCommandableHttpService;
 
 public class UninitializedClient {
 

@@ -10,74 +10,62 @@ import org.pipservices.components.log.CompositeLogger;
 import org.pipservices.commons.refer.*;
 import org.pipservices.commons.run.IOpenable;
 
-public abstract class DirectClient<T> implements IConfigurable, IOpenable, IReferenceable{
-	
+public abstract class DirectClient<T> implements IConfigurable, IOpenable, IReferenceable {
+
 	protected T _controller;
-    protected CompositeLogger _logger = new CompositeLogger();
-    protected CompositeCounters _counters = new CompositeCounters();
-    protected DependencyResolver _dependencyResolver = new DependencyResolver();
-    protected boolean _opened = false;
-    
-    public DirectClient()
-    {
-        _dependencyResolver.put("controller", "none");
-    }
-    
-    public void configure(ConfigParams config) throws ConfigException
-    {
-        _dependencyResolver.configure(config);
-    }
+	protected CompositeLogger _logger = new CompositeLogger();
+	protected CompositeCounters _counters = new CompositeCounters();
+	protected DependencyResolver _dependencyResolver = new DependencyResolver();
+	protected boolean _opened = false;
 
-    @SuppressWarnings("unchecked")
-	public void setReferences(IReferences references) throws ReferenceException
-    {
-        _logger.setReferences(references);
-        _counters.setReferences(references);
+	public DirectClient() {
+		_dependencyResolver.put("controller", "none");
+	}
 
-        _dependencyResolver.setReferences(references);
-        _controller = (T)_dependencyResolver.getOneRequired("controller");
-    }
-    
-    public boolean IsOpened()
-    {
-        return _opened;
-    }
-    
-    public void open(String correlationId) throws ConnectionException
-    {
-        if (IsOpened())
-        {
-            return;
-        }
+	public void configure(ConfigParams config) throws ConfigException {
+		_dependencyResolver.configure(config);
+	}
 
-        if (_controller == null)
-        {
-            throw new ConnectionException(correlationId, "NO_CONTROLLER", "Controller reference is missing");
-        }
+	@SuppressWarnings("unchecked")
+	public void setReferences(IReferences references) throws ReferenceException {
+		_logger.setReferences(references);
+		_counters.setReferences(references);
 
-        _logger.info(correlationId, "Opened Direct client {0}", this.getClass().getName());
+		_dependencyResolver.setReferences(references);
+		_controller = (T) _dependencyResolver.getOneRequired("controller");
+	}
 
-        _opened = true;
-        return;
-    }
-    
-    public void close(String correlationId)
-    {
-        if (IsOpened())
-        {
-            _logger.debug(correlationId, "Closed Direct client {0}", this.getClass().getName());
-        }
+	public boolean IsOpened() {
+		return _opened;
+	}
 
-        _opened = false;
+	public void open(String correlationId) throws ConnectionException {
+		if (IsOpened()) return;
 
-        return;
-    }
-    
-    protected Timing instrument(String correlationId, String methodName)
-    {
-        String typeName = this.getClass().getName();
-        _logger.trace(correlationId, "Calling {0} method of {1}", methodName, typeName);
-        return _counters.beginTiming(typeName + "." + methodName + ".call_time");
-    }
-    
+		if (_controller == null) {
+			throw new ConnectionException(correlationId, "NO_CONTROLLER", "Controller reference is missing");
+		}
+
+		_logger.info(correlationId, "Opened Direct client {0}", this.getClass().getName());
+
+		_opened = true;
+		return;
+	}
+
+	public void close(String correlationId) {
+		if (IsOpened()) {
+			_logger.debug(correlationId, "Closed Direct client {0}", this.getClass().getName());
+		}
+
+		_opened = false;
+
+		return;
+	}
+
+	protected Timing instrument(String correlationId, String methodName) {
+		String typeName = this.getClass().getName();
+		_logger.trace(correlationId, "Calling {0} method of {1}", methodName, typeName);
+		return _counters.beginTiming(typeName + "." + methodName + ".call_time");
+	}
+
 }

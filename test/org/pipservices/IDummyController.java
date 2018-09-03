@@ -1,9 +1,8 @@
-package org.pipservices.example;
+package org.pipservices;
 
 import org.pipservices.commons.data.DataPage;
 import org.pipservices.commons.data.FilterParams;
 import org.pipservices.commons.data.PagingParams;
-import org.pipservices.Dummy;
 
 public interface IDummyController {
 	

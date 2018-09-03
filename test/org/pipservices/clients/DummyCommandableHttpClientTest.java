@@ -7,6 +7,7 @@ import org.pipservices.commons.refer.Descriptor;
 import org.pipservices.commons.refer.References;
 import org.pipservices.*;
 import org.pipservices.example.*;
+import org.pipservices.services.DummyCommandableHttpService;
 
 public class DummyCommandableHttpClientTest {
 

@@ -1,10 +1,10 @@
-package org.pipservices;
+package org.pipservices.clients;
 
 import org.junit.Test;
+import org.pipservices.DummyController;
 import org.pipservices.commons.errors.ApplicationException;
 import org.pipservices.commons.refer.Descriptor;
 import org.pipservices.commons.refer.References;
-import org.pipservices.example.DummyDirectClient;
 
 public class DummyDirectClientTest {
 	
