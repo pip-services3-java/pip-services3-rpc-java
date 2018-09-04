@@ -1,7 +1,5 @@
 package org.pipservices.services;
 
-import java.io.IOException;
-
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
@@ -16,35 +14,37 @@ import org.pipservices.commons.run.*;
 import com.sun.net.httpserver.*;
 
 public abstract class RestService
-		implements IOpenable, IConfigurable, IReferenceable, IUnreferenceable, IRegisterable {
+	implements IOpenable, IConfigurable, IReferenceable, IUnreferenceable, IRegisterable {
 
-//	private final static ConfigParams _defaultConfig = ConfigParams.fromTuples(
-//		"connection.protocol", "http",
-//		"connection.host", "0.0.0.0",
-//		//"connection.port", 3000,
-//		"connection.request_max_size", 1024 * 1024,
-//		"connection.connect_timeout", 60000,
-//		"connection.debug", true
-//	);
-
-	private static final ConfigParams _defaultConfig = ConfigParams.fromTuples("base_route", "",
-			"dependencies.endpoint", "pip-services:endpoint:http:*:1.0");
-
-	@SuppressWarnings("restriction")
-	protected HttpServer _server;
-	protected DependencyResolver _dependencyResolver = new DependencyResolver(_defaultConfig);
-	protected CompositeLogger _logger = new CompositeLogger();
-	protected CompositeCounters _counters = new CompositeCounters();
-	protected String _url;
-	protected String _route;
-	protected HttpEndpoint _endpoint;
+	private static final ConfigParams _defaultConfig = ConfigParams.fromTuples(
+		"base_route", "",
+		"dependencies.endpoint", "pip-services:endpoint:http:*:1.0"
+	);
 
 	private ConfigParams _config;
 	private IReferences _references;
 	private boolean _localEndpoint;
 	private boolean _opened;
 
-	protected RestService() {
+	protected String _baseRoute;
+	protected HttpEndpoint _endpoint;
+	protected DependencyResolver _dependencyResolver = new DependencyResolver(_defaultConfig);
+	protected CompositeLogger _logger = new CompositeLogger();
+	protected CompositeCounters _counters = new CompositeCounters();
+
+	@SuppressWarnings("restriction")
+	protected HttpServer _server;
+	protected String _url;
+
+	protected RestService() {}
+
+	public void configure(ConfigParams config) throws ConfigException {
+		config = config.setDefaults(_defaultConfig);
+
+		_config = config;
+		_dependencyResolver.configure(config);
+
+		_baseRoute = config.getAsStringWithDefault("base_route", _baseRoute);
 	}
 
 	public void setReferences(IReferences references) throws ReferenceException, ConfigException {
@@ -56,23 +56,17 @@ public abstract class RestService
 
 		// Get endpoint
 		_endpoint = (HttpEndpoint) _dependencyResolver.getOneOptional("endpoint");
-		_localEndpoint = _endpoint == null;
 
 		// Or create a local one
-		if (_endpoint == null)
+		if (_endpoint == null) {
 			_endpoint = createLocalEndpoint();
+			_localEndpoint = true;
+		} else {
+			_localEndpoint = false;
+		}
 
 		// Add registration callback to the endpoint
-
 		_endpoint.register(this);
-	}
-
-	public void configure(ConfigParams config) throws ConfigException {
-
-		config = config.setDefaults(_defaultConfig);
-		_dependencyResolver.configure(config);
-
-		_route = config.getAsStringWithDefault("base_route", _route);
 	}
 
 	public void unsetReferences() {
@@ -95,21 +89,15 @@ public abstract class RestService
 		return endpoint;
 	}
 
-	public boolean isOpen() {
-		return _opened;
-	}
-
-	/**
-	 * Does instrumentation of performed business method by counting elapsed time.
-	 * 
-	 * @param correlationId the unique id to identify distributed transaction
-	 * @param name          the name of called business method
-	 * @return ITiming instance to be called at the end of execution of the method.
-	 */
 	protected Timing instrument(String correlationId, String name) {
 		_logger.trace(correlationId, "Executing %s method", name);
 		return _counters.beginTiming(name + ".exec_time");
 	}
+
+	public boolean isOpen() {
+		return _opened;
+	}
+
 
 	public void open(String correlationId) throws ApplicationException {
 		if (isOpen()) return;
@@ -120,25 +108,24 @@ public abstract class RestService
 			_localEndpoint = true;
 		}
 		
-		if (_localEndpoint) {
+		if (_localEndpoint)
 			_endpoint.open(correlationId);
-		} else {
-			_opened = true;
-		}
+
+		_opened = true;
 	}
 
 	public void close(String correlationId) throws ApplicationException {
-		if (!isOpen()) {
-			if (_endpoint == null) {
-				throw new InvalidStateException(correlationId, "NO_ENDPOINT", "HTTP endpoint is missing");
-			}
-
-			if (_localEndpoint) {
-				_endpoint.close(correlationId);
-			}
-
-			_opened = false;
+		if (!_opened) return;
+		
+		if (_endpoint == null) {
+			throw new InvalidStateException(correlationId, "NO_ENDPOINT", "HTTP endpoint is missing");
 		}
+
+		if (_localEndpoint) {
+			_endpoint.close(correlationId);
+		}
+
+		_opened = false;
 	}
 
 	protected Response sendError(Exception ex) {
@@ -168,8 +155,8 @@ public abstract class RestService
 		if (route.charAt(0) != '/')
 			route = "/" + route;
 
-		if (_route != null && _route.length() > 0) {
-			String baseRoute = _route;
+		if (_baseRoute != null && _baseRoute.length() > 0) {
+			String baseRoute = _baseRoute;
 			if (baseRoute.charAt(0) != '/')
 				baseRoute = "/" + baseRoute;
 			route = baseRoute + route;

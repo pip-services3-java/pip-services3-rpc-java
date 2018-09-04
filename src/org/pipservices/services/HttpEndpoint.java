@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.*;
 
 import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -23,12 +22,14 @@ import org.pipservices.commons.run.IOpenable;
 
 import com.sun.net.httpserver.HttpServer;
 
+@SuppressWarnings("restriction")
 public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 
 	private static final ConfigParams _defaultConfig = ConfigParams.fromTuples(
 		"connection.protocol", "http",
 		"connection.host", "0.0.0.0",
 		"connection.port", 3000,
+		
 		"options.request_max_size", 1024 * 1024,
 		"options.connect_timeout", 60000,
 		"options.debug", true
@@ -39,10 +40,9 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 	protected CompositeCounters _counters = new CompositeCounters();
 	protected DependencyResolver _dependencyResolver = new DependencyResolver(_defaultConfig);
 
-	protected String _url;
-	protected HttpServer _server;
-	protected ResourceConfig _resources;
-	
+	private String _url;
+	private HttpServer _server;
+	private ResourceConfig _resources;
 	private List<IRegisterable> _registrations = new ArrayList<IRegisterable>();
 
 	public void setReferences(IReferences references) throws ReferenceException {
@@ -68,7 +68,6 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 		return _server != null;
 	}
 
-	@SuppressWarnings("restriction")
 	@Override
 	public void open(String correlationId) throws ApplicationException {
 		if (isOpen()) return;
@@ -96,7 +95,6 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 		}
 	}
 
-	@SuppressWarnings("restriction")
 	@Override
 	public void close(String correlationId) throws ApplicationException {
 		if (_server != null) {

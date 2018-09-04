@@ -18,7 +18,7 @@ public class CommandableHttpService extends RestService {
 	private ICommandable _controller;	
 	
 	public CommandableHttpService(String baseRoute) {
-		this._route = baseRoute;
+		this._baseRoute = baseRoute;
 		_dependencyResolver.put("controller", "none");
 	}
 
@@ -64,7 +64,7 @@ public class CommandableHttpService extends RestService {
 					? request.getUriInfo().getPathParameters().getFirst("correlation_id")
 					: parameters.getAsStringWithDefault("correlation_id", "");
 
-			Timing timing = instrument(correlationId, _route + '.' + command.getName());
+			Timing timing = instrument(correlationId, _baseRoute + '.' + command.getName());
 
 			try {
 				Object result = command.execute(correlationId, parameters);

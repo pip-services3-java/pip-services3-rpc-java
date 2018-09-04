@@ -52,9 +52,9 @@ public class DummyHttpEndpointTest {
 			new Descriptor("pip-services", "endpoint", "http", "default", "1.0"), _httpEndpoint
 		);
 
-		_serviceV1.configure(ConfigParams.fromTuples("base_route", "/api/v1"));
+		_serviceV1.configure(ConfigParams.fromTuples("base_route", "/v1/dummy"));
 
-		_serviceV2.configure(ConfigParams.fromTuples("base_route", "/api/v2"));
+		_serviceV2.configure(ConfigParams.fromTuples("base_route", "/v2/dummy"));
 
 		_httpEndpoint.configure(RestConfig);
 
@@ -92,7 +92,7 @@ public class DummyHttpEndpointTest {
 	public void itShouldCreateDummy() throws IOException {
 		Dummy newDummy = new Dummy("1", "Key 1", "Content 1", true);
 
-		String result = sendPostRequest("/api/v1/dummy/create_dummy", newDummy);
+		String result = sendPostRequest("/v1/dummy/create_dummy", newDummy);
 
 		Dummy resultDummy = JsonConverter.fromJson(Dummy.class, result);
 
@@ -105,7 +105,7 @@ public class DummyHttpEndpointTest {
 	public void itShouldGetDummy() throws JsonMappingException, JsonParseException, IOException {
 		Dummy existingDummy = new Dummy("1", "Key 1", "Content 1", true);
 
-		String result = sendPostRequest("/api/v1/dummy/get_dummy_by_id", existingDummy.getId());
+		String result = sendPostRequest("/v1/dummy/get_dummy_by_id", existingDummy.getId());
 
 		Dummy resultDummy = JsonConverter.fromJson(Dummy.class, result);
 
@@ -116,7 +116,7 @@ public class DummyHttpEndpointTest {
 	}
 
 	public void itShouldPingDummy() throws JsonMappingException, JsonParseException, IOException {
-		String result = sendPostRequest("/api/v2/dummy/ping_dummy", new Dummy());
+		String result = sendPostRequest("/v2/dummy/ping_dummy", new Dummy());
 
 		assertNotNull(result);
 
