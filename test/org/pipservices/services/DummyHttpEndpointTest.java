@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientRequest;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.pipservices.commons.config.ConfigParams;
 import org.pipservices.commons.convert.JsonConverter;
 import org.pipservices.commons.errors.ApplicationException;
@@ -24,7 +25,7 @@ import org.pipservices.services.HttpEndpoint;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.sun.jersey.api.json.JSONConfiguration;
+//import com.sun.jersey.api.json.JSONConfiguration;
 
 public class DummyHttpEndpointTest {
 
@@ -125,9 +126,11 @@ public class DummyHttpEndpointTest {
 		assertTrue(resultPing);
 	}
 
+	//Todo 
 	private static String sendPostRequest(String route, Object entity) throws JsonProcessingException {
 		ClientConfig clientConfig = new ClientConfig();
-		clientConfig.getProperties().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+		//clientConfig.getProperties().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+		clientConfig.register(new JacksonFeature());
 		Client httpClient = ClientBuilder.newClient(clientConfig);
 		ClientRequest request = new ClientRequest(null);
 		request.setEntity(entity);
