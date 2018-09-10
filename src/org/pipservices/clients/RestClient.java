@@ -17,6 +17,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.pipservices.commons.config.*;
 import org.pipservices.components.count.*;
 import org.pipservices.commons.data.FilterParams;
@@ -34,7 +35,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 //import com.sun.jersey.api.client.*;
 //import com.sun.jersey.api.client.config.*;
-import com.sun.jersey.api.json.*;
+//import com.sun.jersey.api.json.*;
 
 public class RestClient implements IOpenable, IConfigurable, IReferenceable {
 
@@ -115,7 +116,8 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
 			_url += "/" + _route;
 
 		ClientConfig clientConfig = new ClientConfig();
-		clientConfig.getProperties().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+		//clientConfig.getProperties().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+		clientConfig.register(new JacksonFeature());
 		_client = ClientBuilder.newClient(clientConfig);
 
 		_resource = _client.target(_url);
