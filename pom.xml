@@ -225,6 +225,11 @@
       <version>2.27</version>
 	</dependency>
 	<dependency>
+		<groupId>org.glassfish.jersey.inject</groupId>
+		<artifactId>jersey-hk2</artifactId>
+		<version>2.26</version>
+	</dependency>
+	<dependency>
   	  <groupId>com.google.http-client</groupId>
   	  <artifactId>google-http-client</artifactId>
    	  <version>1.23.0</version>
