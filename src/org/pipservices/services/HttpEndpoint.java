@@ -81,11 +81,11 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 
 		try {
 			_resources = new ResourceConfig();
-			
+	
 			performRegistrations();
 			
 			_server = JdkHttpServerFactory.createHttpServer(uri, _resources);
-			_server.start();
+//			_server.start();
 
 			_logger.info(correlationId, "Opened REST service at %s", _url);
 		} catch (Exception ex) {
