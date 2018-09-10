@@ -42,14 +42,14 @@ public class DummyCommandableHttpClientTest {
 		_service.setReferences(references);
 
 		_service.open(null);
-		_service.wait();
+		//_service.wait();
 
 		_fixture = new DummyClientFixture(_client);
 
 		// _source = new CancellationTokenSource();
 
 		_client.open(null);
-		_client.wait();
+		//_client.wait();
 	}
 
 	@Test
