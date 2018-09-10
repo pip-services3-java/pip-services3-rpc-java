@@ -2,12 +2,13 @@ package org.pipservices.services;
 
 import java.util.*;
 
+import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
 import org.pipservices.commons.convert.*;
 import org.pipservices.commons.data.*;
 
-import com.sun.jersey.core.util.*;
+//import com.sun.jersey.core.util.*;
 
-public class RestQueryParams extends MultivaluedMapImpl {
+public class RestQueryParams extends MultivaluedStringMap {
 	private static final long serialVersionUID = -903917330561942092L;
 
 	public RestQueryParams() {
