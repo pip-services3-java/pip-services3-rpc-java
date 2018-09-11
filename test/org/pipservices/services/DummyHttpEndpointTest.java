@@ -8,10 +8,11 @@ import java.io.IOException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.pipservices.commons.config.ConfigParams;
 import org.pipservices.commons.convert.JsonConverter;
@@ -29,11 +30,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class DummyHttpEndpointTest {
 
-	private static final ConfigParams RestConfig = ConfigParams.fromTuples(
-		"connection.protocol", "http",
-		"connection.host", "localhost",
-		"connection.port", 3000
-	);
+	private static final ConfigParams RestConfig = ConfigParams.fromTuples("connection.protocol", "http",
+			"connection.host", "localhost", "connection.port", 3000);
 
 	private final DummyController _ctrl;
 	private final DummyCommandableHttpService _serviceV1;
@@ -49,9 +47,8 @@ public class DummyHttpEndpointTest {
 		_httpEndpoint = new HttpEndpoint();
 
 		References references = References.fromTuples(
-			new Descriptor("pip-services-dummies", "controller", "default", "default", "1.0"), _ctrl,
-			new Descriptor("pip-services", "endpoint", "http", "default", "1.0"), _httpEndpoint
-		);
+				new Descriptor("pip-services-dummies", "controller", "default", "default", "1.0"), _ctrl,
+				new Descriptor("pip-services", "endpoint", "http", "default", "1.0"), _httpEndpoint);
 
 		_serviceV1.configure(ConfigParams.fromTuples("base_route", "/v1/dummy"));
 
@@ -65,8 +62,8 @@ public class DummyHttpEndpointTest {
 		_httpEndpoint.open(null);
 		_serviceV1.open(null);
 		_serviceV2.open(null);
-		
-		//_httpEndpoint.wait();
+
+		// _httpEndpoint.wait();
 	}
 
 	public void close() throws ApplicationException, InterruptedException {
@@ -126,20 +123,17 @@ public class DummyHttpEndpointTest {
 		assertTrue(resultPing);
 	}
 
-	//Todo 
+	// Todo
 	private static String sendPostRequest(String route, Object entity) throws JsonProcessingException {
 		ClientConfig clientConfig = new ClientConfig();
-		//clientConfig.getProperties().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
 		clientConfig.register(new JacksonFeature());
 		Client httpClient = ClientBuilder.newClient(clientConfig);
-		ClientRequest request = new ClientRequest(null);
-		request.setEntity(entity);
 
-		// String content = JsonConverter.toJson(request); //, Encoding.UTF8,
-		// "application/json"))
-		Response response = httpClient.target("http://localhost:3000" + route).request(request.getMediaType()).get();
+		String content = JsonConverter.toJson(entity);
+		Response response = httpClient.target("http://localhost:3000" + route).request(MediaType.APPLICATION_JSON)
+				.post(Entity.entity(content, MediaType.APPLICATION_JSON));
 
-		return response.getMetadata().toString(); /// .Content.ReadAsStringAsync().Result;
+		return response.readEntity(String.class);
 
 	}
 

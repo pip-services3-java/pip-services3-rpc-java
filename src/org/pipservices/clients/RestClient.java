@@ -245,7 +245,7 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
 		ClientResponse result = new ClientResponse(request, response);
 
 		if (result.getStatus() >= 400) {
-			String responseContent = result.getEntity().toString();
+			String responseContent = result.readEntity(String.class);
 
 			ErrorDescription errorObject = null;
 			try {

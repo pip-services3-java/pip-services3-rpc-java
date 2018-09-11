@@ -61,7 +61,7 @@ public class DummyCommandableHttpClientTest {
 	public void testExceptionPropagation() {
 		try {
 			_client.raiseException("123");
-			_client.wait();
+			//_client.wait();
 		} catch (Exception ex) {
 			System.err.println(ex.getMessage());
 		}
@@ -69,9 +69,9 @@ public class DummyCommandableHttpClientTest {
 
 	public void close() throws InterruptedException, ApplicationException {
 		_client.close(null);
-		_client.wait();
+		//_client.wait();
 
 		_service.close(null);
-		_service.wait();
+		//_service.wait();
 	}
 }
