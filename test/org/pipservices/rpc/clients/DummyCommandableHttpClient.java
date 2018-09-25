@@ -1,13 +1,11 @@
-package org.pipservices.clients;
+package org.pipservices.rpc.clients;
 
-import java.io.IOException;
+import javax.ws.rs.core.*;
 
-import org.pipservices.commons.data.DataPage;
-import org.pipservices.commons.data.FilterParams;
-import org.pipservices.commons.data.PagingParams;
-import org.pipservices.commons.errors.ApplicationException;
-import org.pipservices.Dummy;
-import org.pipservices.clients.CommandableHttpClient;
+import org.pipservices.commons.data.*;
+import org.pipservices.commons.errors.*;
+import org.pipservices.commons.run.*;
+import org.pipservices.rpc.*;
 
 public class DummyCommandableHttpClient extends CommandableHttpClient implements IDummyClient{
 
@@ -15,75 +13,69 @@ public class DummyCommandableHttpClient extends CommandableHttpClient implements
 		super("dummy");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public DataPage<Dummy> getPageByFilter(String correlationId, FilterParams filter, PagingParams paging) {
+	public DataPage<Dummy> getPageByFilter(String correlationId,
+		FilterParams filter, PagingParams paging) throws ApplicationException {
 		
-		filter = filter != null ? filter : new FilterParams();
-        paging = paging != null ? paging : new PagingParams();
-     
-        try {
-			return (DataPage<Dummy>)callCommand("get_dummies", correlationId, filter, paging);
-		} catch (ApplicationException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return callCommand(
+			new GenericType<DataPage<Dummy>>() {},
+			"get_dummies",
+			correlationId,
+			Parameters.fromTuples(
+				"filter", filter,
+				"paging", paging
+			)
+		);
 	}
 
 	@Override
-	public Dummy getOneById(String correlationId, String id) {
-		try {
-			return (Dummy)callCommand("get_dummy_by_id", correlationId, id);
-		} catch (ApplicationException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+	public Dummy getOneById(String correlationId, String id) throws ApplicationException {
+		return callCommand(
+			Dummy.class,
+			"get_dummy_by_id",
+			correlationId,
+			Parameters.fromTuples("dummy_id", id)
+		);
 	}
 
 	@Override
-	public Dummy create(String correlationId, Dummy entity) {
-		try {
-			return (Dummy)callCommand("create_dummy", correlationId, entity);
-		} catch (ApplicationException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+	public Dummy create(String correlationId, Dummy entity) throws ApplicationException {
+		return callCommand(
+			Dummy.class,
+			"create_dummy",
+			correlationId,
+			Parameters.fromTuples("dummy", entity)
+		);
 	}
 
 	@Override
-	public Dummy update(String correlationId, Dummy entity) {
-		try {
-			return (Dummy)callCommand("update_dummy", correlationId, entity);
-		} catch (ApplicationException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+	public Dummy update(String correlationId, Dummy entity) throws ApplicationException {
+		return callCommand(
+			Dummy.class,
+			"update_dummy",
+			correlationId,
+			Parameters.fromTuples("dummy", entity)
+		);
 	}
 
 	@Override
-	public Dummy deleteById(String correlationId, String id) {
-		try {
-			return (Dummy)callCommand("delete_dummy", correlationId, id);
-		} catch (ApplicationException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+	public Dummy deleteById(String correlationId, String id) throws ApplicationException {
+		return callCommand(
+			Dummy.class,
+			"delete_dummy",
+			correlationId,
+			Parameters.fromTuples("dummy_id", id)
+		);
 	}
 
 	@Override
-	public void raiseException(String correlationId) {
-		try {
-			callCommand("raise_exception", correlationId, new FilterParams(), new PagingParams());
-		} catch (ApplicationException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+	public void raiseException(String correlationId) throws ApplicationException {
+		callCommand(
+			Object.class,
+			"raise_exception",
+			correlationId,
+			new Parameters()
+		);
 	}
 
 }

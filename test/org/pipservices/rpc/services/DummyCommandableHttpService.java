@@ -1,7 +1,7 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
 import org.pipservices.commons.refer.Descriptor;
-import org.pipservices.services.CommandableHttpService;
+import org.pipservices.rpc.services.CommandableHttpService;
 
 public class DummyCommandableHttpService extends CommandableHttpService{
 

@@ -1,17 +1,13 @@
-package org.pipservices.clients;
+package org.pipservices.rpc.clients;
 
-import org.pipservices.commons.config.ConfigParams;
-import org.pipservices.commons.config.IConfigurable;
-import org.pipservices.components.count.CompositeCounters;
-import org.pipservices.components.count.Timing;
-import org.pipservices.commons.errors.ConfigException;
-import org.pipservices.commons.errors.ConnectionException;
-import org.pipservices.components.log.CompositeLogger;
+import org.pipservices.commons.config.*;
+import org.pipservices.components.count.*;
+import org.pipservices.commons.errors.*;
+import org.pipservices.components.log.*;
 import org.pipservices.commons.refer.*;
-import org.pipservices.commons.run.IOpenable;
+import org.pipservices.commons.run.*;
 
 public abstract class DirectClient<T> implements IConfigurable, IOpenable, IReferenceable {
-
 	protected T _controller;
 	protected CompositeLogger _logger = new CompositeLogger();
 	protected CompositeCounters _counters = new CompositeCounters();
@@ -35,12 +31,12 @@ public abstract class DirectClient<T> implements IConfigurable, IOpenable, IRefe
 		_controller = (T) _dependencyResolver.getOneRequired("controller");
 	}
 
-	public boolean IsOpened() {
+	public boolean isOpen() {
 		return _opened;
 	}
 
 	public void open(String correlationId) throws ConnectionException {
-		if (IsOpened()) return;
+		if (isOpen()) return;
 
 		if (_controller == null) {
 			throw new ConnectionException(correlationId, "NO_CONTROLLER", "Controller reference is missing");
@@ -53,7 +49,7 @@ public abstract class DirectClient<T> implements IConfigurable, IOpenable, IRefe
 	}
 
 	public void close(String correlationId) {
-		if (IsOpened()) {
+		if (isOpen()) {
 			_logger.debug(correlationId, "Closed Direct client {0}", this.getClass().getName());
 		}
 
@@ -64,7 +60,7 @@ public abstract class DirectClient<T> implements IConfigurable, IOpenable, IRefe
 
 	protected Timing instrument(String correlationId, String methodName) {
 		String typeName = this.getClass().getName();
-		_logger.trace(correlationId, "Calling {0} method of {1}", methodName, typeName);
+		_logger.trace(correlationId, "Calling %s method of %s", methodName, typeName);
 		return _counters.beginTiming(typeName + "." + methodName + ".call_time");
 	}
 

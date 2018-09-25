@@ -1,11 +1,11 @@
-package org.pipservices.connect;
+package org.pipservices.rpc.connect;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.pipservices.commons.config.ConfigParams;
 import org.pipservices.components.connect.ConnectionParams;
-import org.pipservices.connect.HttpConnectionResolver;
+import org.pipservices.rpc.connect.HttpConnectionResolver;
 import org.pipservices.commons.errors.ApplicationException;
 
 public class HttpConnectionResolverTest {

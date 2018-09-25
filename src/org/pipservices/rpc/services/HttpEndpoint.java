@@ -1,4 +1,4 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
 import java.net.URI;
 import java.util.*;
@@ -16,7 +16,7 @@ import org.pipservices.components.connect.ConnectionParams;
 import org.pipservices.components.count.*;
 import org.pipservices.commons.errors.*;
 import org.pipservices.components.log.CompositeLogger;
-import org.pipservices.connect.HttpConnectionResolver;
+import org.pipservices.rpc.connect.HttpConnectionResolver;
 import org.pipservices.commons.refer.*;
 import org.pipservices.commons.run.IOpenable;
 
@@ -86,11 +86,11 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 			
 			_server = JdkHttpServerFactory.createHttpServer(uri, _resources);
 //			_server.start();
-
+			
 			_logger.info(correlationId, "Opened REST service at %s", _url);
 		} catch (Exception ex) {
 			_server = null;
-			throw new ConnectionException(correlationId, "CANNOT_CONNECT", "Opening REST service failed")
+			throw new ConnectionException(correlationId, "CANNOT_CONNECT", "Opening HTTP endpoint failed")
 				.wrap(ex).withDetails("url", _url);
 		}
 	}
@@ -101,9 +101,9 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 			// Eat exceptions
 			try {
 				_server.stop(0);
-				_logger.info(correlationId, "Closed REST service at %s", _url);
+				_logger.info(correlationId, "Closed HTTP endpoint at %s", _url);
 			} catch (Exception ex) {
-				_logger.warn(correlationId, "Failed while closing REST service: %s", ex);
+				_logger.warn(correlationId, "Failed while closing HTTP endpoint: %s", ex);
 			}
 			_server = null;
 			_resources = null;

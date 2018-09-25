@@ -1,4 +1,4 @@
-package org.pipservices.connect;
+package org.pipservices.rpc.connect;
 
 import java.net.URI;
 import java.util.List;
@@ -14,7 +14,6 @@ import org.pipservices.commons.refer.IReferenceable;
 import org.pipservices.commons.refer.IReferences;
 
 public class HttpConnectionResolver implements IReferenceable, IConfigurable {
-
 	protected ConnectionResolver _connectionResolver = new ConnectionResolver();
 
 	public void setReferences(IReferences references) {
@@ -30,7 +29,7 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 			throw new ConfigException(correlationId, "NO_CONNECTION", "HTTP connection is not set");
 
 		String uri = connection.getUri();
-		if (uri != null && uri.trim().length() > 0)
+		if (uri != null && uri.length() > 0)
 			return;
 
 		String protocol = connection.getProtocol("http");
@@ -49,7 +48,7 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 	}
 
 	private void updateConnection(ConnectionParams connection) {
-		if (connection.getUri() == null || connection.getUri().trim().length() == 0) {
+		if (connection.getUri() == null || connection.getUri().length() == 0) {
 			String uri = connection.getProtocol() + "://" + connection.getHost();
 			if (connection.getPort() != 0)
 				uri += ":" + connection.getPort();
@@ -81,7 +80,6 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 	public void register(String correlationId) throws ApplicationException {
 		ConnectionParams connection = _connectionResolver.resolve(correlationId);
 		validateConnection(correlationId, connection);
-
 		_connectionResolver.register(correlationId, connection);
 	}
 

@@ -1,18 +1,18 @@
-package org.pipservices.clients;
+package org.pipservices.rpc.clients;
 
-import org.junit.Test;
-import org.pipservices.DummyController;
+import org.junit.*;
 import org.pipservices.commons.errors.ApplicationException;
 import org.pipservices.commons.refer.Descriptor;
 import org.pipservices.commons.refer.References;
+import org.pipservices.rpc.DummyController;
 
-public class DummyDirectClientTest {
+public class DummyDirectClientTest {	
+	private DummyController _ctrl;
+    private DummyDirectClient _client;
+    private DummyClientFixture _fixture;
 	
-	private final DummyController _ctrl;
-    private final DummyDirectClient _client;
-    private final DummyClientFixture _fixture;
-	
-    public DummyDirectClientTest() throws ApplicationException {
+    @Before
+    public void setUp() throws ApplicationException {
         _ctrl = new DummyController();
         _client = new DummyDirectClient();
 
@@ -25,13 +25,15 @@ public class DummyDirectClientTest {
 
         _client.open(null);
     }
+
+    @After
+    public void tearDown() {
+    	_client.close(null);
+    }    
     
     @Test
     public void testCrudOperations() throws ApplicationException {
     	_fixture.testCrudOperations();
-    	}
+	}
     
-    public void dispose() {
-    	_client.close(null);
-    }    
 }

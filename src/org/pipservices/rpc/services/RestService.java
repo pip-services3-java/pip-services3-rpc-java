@@ -1,11 +1,16 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Response;
+import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
-import org.glassfish.jersey.process.Inflector;
-import org.glassfish.jersey.server.model.Resource;
+import javax.ws.rs.container.*;
+import javax.ws.rs.core.*;
+
+import org.glassfish.jersey.process.*;
+import org.glassfish.jersey.server.model.*;
 import org.pipservices.commons.config.*;
+import org.pipservices.commons.convert.JsonConverter;
 import org.pipservices.components.count.*;
 import org.pipservices.commons.errors.*;
 import org.pipservices.components.log.*;
@@ -17,7 +22,7 @@ public abstract class RestService
 	implements IOpenable, IConfigurable, IReferenceable, IUnreferenceable, IRegisterable {
 
 	private static final ConfigParams _defaultConfig = ConfigParams.fromTuples(
-		"base_route", "",
+		//"base_route", "",
 		"dependencies.endpoint", "pip-services:endpoint:http:*:1.0"
 	);
 
@@ -39,9 +44,8 @@ public abstract class RestService
 	protected RestService() {}
 
 	public void configure(ConfigParams config) throws ConfigException {
-		config = config.setDefaults(_defaultConfig);
+		_config = config.setDefaults(_defaultConfig);
 
-		_config = config;
 		_dependencyResolver.configure(config);
 
 		_baseRoute = config.getAsStringWithDefault("base_route", _baseRoute);
@@ -148,6 +152,52 @@ public abstract class RestService
 		return HttpResponseSender.sendDeletedResult(result);
 	}
 
+	protected String getQueryParameter(ContainerRequestContext request, String name) {
+		try {
+			name = URLEncoder.encode(name, "UTF-8");
+			if (request.getUriInfo().getQueryParameters().containsKey(name)) {
+				String value = request.getUriInfo().getQueryParameters().getFirst(name);
+				value = value != null ? URLDecoder.decode(value, "UTF-8") : null;
+			}
+		} catch (UnsupportedEncodingException ex) {
+			// Do nothing...
+		}
+		
+		return null;
+	}
+	
+	protected String getBodyAsString(ContainerRequestContext request) throws ApplicationException {
+		try {
+			InputStream streamReader = request.getEntityStream();
+			byte[] data = new byte[streamReader.available()];
+			streamReader.read(data, 0, data.length);
+			String value = new String(data, "UTF-8");
+			return value;
+		} catch (IOException ex) {
+			throw new InvocationException(
+				null, "READ_ERROR", "Cannot read input stream"
+			).wrap(ex);
+		}
+	}
+
+	protected <T> T getBodyAsJson(Class<T> type, ContainerRequestContext request) throws ApplicationException {
+		if (!request.getMediaType().toString().contains(MediaType.APPLICATION_JSON)) {
+			throw new InvocationException(
+				null, "EXPECTED_JSON", "Expected application/json media type"
+			);
+		}
+		
+		String json = getBodyAsString(request);
+		
+		try {
+			return JsonConverter.fromJson(type, json);
+		} catch (IOException ex) {
+			throw new InvocationException(
+				null, "READ_ERROR", "Failed to deserialize request from JSON"
+			).wrap(ex);
+		}
+	}
+	
 	protected void registerRoute(String method, String route, Inflector<ContainerRequestContext, Response> action) {
 		if (_endpoint == null)
 			return;

@@ -1,4 +1,4 @@
-package org.pipservices;
+package org.pipservices.rpc;
 
 import java.util.*;
 
@@ -10,42 +10,46 @@ import org.pipservices.commons.errors.*;
 public class DummyController implements IDummyController, ICommandable {
 	private Object _lock = new Object();
 	private List<Dummy> _entities = new ArrayList<Dummy>();
-	
+
 	private DummyCommandSet _commandSet;
-	
+
 	public DummyController() {}
 
 	@Override
 	public CommandSet getCommandSet() {
-		if (_commandSet == null)
-        {
-            _commandSet = new DummyCommandSet(this);
-        }
+		if (_commandSet == null) {
+			_commandSet = new DummyCommandSet(this);
+		}
 
-	    return _commandSet;
+		return _commandSet;
 	}
 
 	@Override
-	public DataPage<Dummy> getPageByFilter(String correlationId, FilterParams filter, PagingParams paging) {
+	public DataPage<Dummy> getPageByFilter(String correlationId, FilterParams filter, PagingParams paging)
+		throws ApplicationException {
+		
 		filter = filter != null ? filter : new FilterParams();
 		String key = filter.getAsNullableString("key");
-		
+
 		paging = paging != null ? paging : new PagingParams();
 		long skip = paging.getSkip(0);
 		long take = paging.getTake(100);
-		
+
 		List<Dummy> result = new ArrayList<Dummy>();
+		
 		synchronized (_lock) {
-			for (Dummy entity: _entities) {
+			for (Dummy entity : _entities) {
 				if (key != null && !key.equals(entity.getKey()))
 					continue;
-				
+
 				skip--;
-				if (skip >= 0) continue; 
-				
+				if (skip >= 0)
+					continue;
+
 				take--;
-				if (take < 0) break;
-				
+				if (take < 0)
+					break;
+
 				result.add(entity);
 			}
 		}
@@ -53,7 +57,9 @@ public class DummyController implements IDummyController, ICommandable {
 	}
 
 	@Override
-	public Dummy getOneById(String correlationId, String id) {
+	public Dummy getOneById(String correlationId, String id)
+		throws ApplicationException {
+		
 		synchronized (_lock) {
 			for (Dummy entity : _entities) {
 				if (entity.getId().equals(id))
@@ -64,18 +70,22 @@ public class DummyController implements IDummyController, ICommandable {
 	}
 
 	@Override
-	public Dummy create(String correlationId, Dummy entity) {
+	public Dummy create(String correlationId, Dummy entity) 
+		throws ApplicationException {
+		
 		synchronized (_lock) {
 			if (entity.getId() == null)
-			entity.setId(IdGenerator.nextLong());
+				entity.setId(IdGenerator.nextLong());
 
-		_entities.add(entity);
+			_entities.add(entity);
 		}
 		return entity;
 	}
 
 	@Override
-	public Dummy update(String correlationId, Dummy newEntity) {
+	public Dummy update(String correlationId, Dummy newEntity) 
+		throws ApplicationException {
+		
 		synchronized (_lock) {
 			for (int index = 0; index < _entities.size(); index++) {
 				Dummy entity = _entities.get(index);
@@ -84,12 +94,14 @@ public class DummyController implements IDummyController, ICommandable {
 					return newEntity;
 				}
 			}
-		}		
+		}
 		return null;
 	}
 
 	@Override
-	public Dummy deleteById(String correlationId, String id) {
+	public Dummy deleteById(String correlationId, String id) 
+		throws ApplicationException {
+		
 		synchronized (_lock) {
 			for (int index = 0; index < _entities.size(); index++) {
 				Dummy entity = _entities.get(index);
@@ -103,18 +115,14 @@ public class DummyController implements IDummyController, ICommandable {
 	}
 
 	@Override
-	public void raiseException(String correlationId) {
-		try {
-			throw new NotFoundException(correlationId, "TEST_ERROR", "Dummy error in controller!");
-		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+	public void raiseException(String correlationId) 
+		throws ApplicationException {
+
+		throw new NotFoundException(correlationId, "TEST_ERROR", "Dummy error in controller!");
 	}
 
 	@Override
-	public boolean ping() {
+	public boolean ping() throws ApplicationException {
 		return true;
 	}
 }

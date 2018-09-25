@@ -1,19 +1,19 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.*;
 import java.util.*;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.jersey.process.Inflector;
-import org.pipservices.commons.config.ConfigParams;
-import org.pipservices.commons.errors.ConfigException;
-import org.pipservices.components.info.ContextInfo;
-import org.pipservices.commons.refer.Descriptor;
-import org.pipservices.commons.refer.IReferences;
-import org.pipservices.commons.refer.ReferenceException;
+import org.glassfish.jersey.process.*;
+import org.pipservices.commons.config.*;
+import org.pipservices.commons.convert.*;
+import org.pipservices.commons.data.*;
+import org.pipservices.commons.errors.*;
+import org.pipservices.commons.refer.*;
+import org.pipservices.commons.run.*;
+import org.pipservices.components.info.*;
 
 public class StatusRestService extends RestService {
 	private ZonedDateTime _startTime = ZonedDateTime.now();
@@ -48,20 +48,30 @@ public class StatusRestService extends RestService {
 	}
 	
 	private Response status(ContainerRequestContext request) {
-		ContextInfo context = new ContextInfo();
-		context.setContextId(_contextInfo != null ? _contextInfo.getContextId() : "");
-		context.setName(_contextInfo != null ? _contextInfo.getName() : "Unknown");
-		context.setDescription(_contextInfo != null ? _contextInfo.getDescription() : "");
-		context.setUptime(ChronoUnit.MILLIS.between(ZonedDateTime.now(), _startTime));
-		context.setProperties(_contextInfo.getProperties());
+		String id = _contextInfo != null ? _contextInfo.getContextId() : "";
+		String name = _contextInfo != null ? _contextInfo.getName() : "Unknown";
+		String description = _contextInfo != null ? _contextInfo.getDescription() : "";
+		long uptime = Duration.between(_startTime, ZonedDateTime.now()).toMillis();
+		StringValueMap properties = _contextInfo.getProperties();
+
 		List<String> components = new ArrayList<String>();
 		if (_references != null) {
 			for (Object locator : _references.getAllLocators())
 				components.add(locator.toString());
 		}
-		context.setComponents(components);
 
-		return sendResult(context);
+		Parameters status = Parameters.fromTuples(
+			"id", id,
+			"name", name,
+			"description", description,
+			"start_time", StringConverter.toString(_startTime),
+			"current_time", StringConverter.toString(ZonedDateTime.now()),
+			"uptime", uptime,
+			"properties", properties,
+			"components", components
+		);
+				
+		return sendResult(status);
 	}
 
 }

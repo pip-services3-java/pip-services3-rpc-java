@@ -1,10 +1,10 @@
-package org.pipservices.clients;
+package org.pipservices.rpc.clients;
 
 import static org.junit.Assert.*;
 
-import org.pipservices.Dummy;
 import org.pipservices.commons.data.*;
 import org.pipservices.commons.errors.*;
+import org.pipservices.rpc.Dummy;
 
 public class DummyClientFixture {
     private final Dummy DUMMY1 = new Dummy(null, "Key 1", "Content 1", true);

@@ -1,18 +1,16 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
-import java.io.InputStream;
-import java.util.List;
+import java.util.*;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.container.*;
+import javax.ws.rs.core.*;
 
-import org.glassfish.jersey.process.Inflector;
+import org.glassfish.jersey.process.*;
 import org.pipservices.commons.commands.*;
-import org.pipservices.commons.errors.ConfigException;
-import org.pipservices.commons.refer.IReferences;
-import org.pipservices.commons.refer.ReferenceException;
+import org.pipservices.commons.errors.*;
+import org.pipservices.commons.refer.*;
 import org.pipservices.components.count.*;
-import org.pipservices.commons.run.Parameters;
+import org.pipservices.commons.run.*;
 
 public class CommandableHttpService extends RestService {
 	private ICommandable _controller;	
@@ -47,22 +45,12 @@ public class CommandableHttpService extends RestService {
 
 	private Response executeCommand(ICommand command, ContainerRequestContext request) {
 		try {
-			String body = "";
+			String json = getBodyAsString(request);
 
-			try (InputStream streamReader = request.getEntityStream()) {
-				byte[] data = new byte[streamReader.available()];
-				streamReader.read(data, 0, data.length);
-				body = new String(data, "UTF-8");
-			} catch (Exception ex) {
-				return sendError(ex);
-			}
+			Parameters parameters = json == null
+					? new Parameters() : Parameters.fromJson(json);
 
-			Parameters parameters = body == null || body.trim().length() == 0
-					? new Parameters() : Parameters.fromJson(body);
-
-			String correlationId = request.getUriInfo().getPathParameters().containsKey("correlation_id")
-					? request.getUriInfo().getPathParameters().getFirst("correlation_id")
-					: parameters.getAsStringWithDefault("correlation_id", "");
+			String correlationId = getQueryParameter(request, "correlation_id");
 
 			Timing timing = instrument(correlationId, _baseRoute + '.' + command.getName());
 

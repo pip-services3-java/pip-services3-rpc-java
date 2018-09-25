@@ -1,4 +1,4 @@
-package org.pipservices;
+package org.pipservices.rpc;
 
 import org.pipservices.commons.data.*;
 

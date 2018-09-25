@@ -1,30 +1,24 @@
-package org.pipservices.clients;
+package org.pipservices.rpc.clients;
 
-import java.io.IOException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
-import javax.ws.rs.HttpMethod;
-
-import org.pipservices.commons.data.FilterParams;
-import org.pipservices.commons.data.PagingParams;
-import org.pipservices.commons.errors.ApplicationException;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import org.pipservices.commons.errors.*;
 
 public class CommandableHttpClient extends RestClient {
 
 	public CommandableHttpClient(String baseRoute) {
-		this._route = baseRoute;
+		this._baseRoute = baseRoute;
 	}
 
-	public <T> T callCommand(String route, String correlationId, FilterParams filter, PagingParams paging)
-			throws JsonMappingException, JsonParseException, ApplicationException, IOException {
-		return execute(correlationId, HttpMethod.POST, route, filter, paging);
+	public <T> T callCommand(Class<T> type, String route, String correlationId, Object entity)
+		throws ApplicationException {
+		return execute(type, correlationId, HttpMethod.POST, route, entity);
 	}
 
-	public <T> T callCommand(String route, String correlationId, Object entity)
-			throws JsonMappingException, JsonParseException, ApplicationException, IOException {
-		return execute(correlationId, HttpMethod.POST, route, entity);
+	public <T> T callCommand(GenericType<T> type, String route, String correlationId, Object entity)
+		throws ApplicationException {
+		return execute(type, correlationId, HttpMethod.POST, route, entity);
 	}
-
+	
 }

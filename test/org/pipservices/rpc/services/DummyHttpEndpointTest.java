@@ -1,10 +1,8 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
-import org.junit.Test;
+import org.junit.*;
 
 import static org.junit.Assert.*;
-
-import java.io.IOException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -16,30 +14,29 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.pipservices.commons.config.ConfigParams;
 import org.pipservices.commons.convert.JsonConverter;
-import org.pipservices.commons.errors.ApplicationException;
 import org.pipservices.commons.refer.Descriptor;
 import org.pipservices.commons.refer.References;
-import org.pipservices.Dummy;
-import org.pipservices.DummyController;
-import org.pipservices.services.HttpEndpoint;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-//import com.sun.jersey.api.json.JSONConfiguration;
+import org.pipservices.commons.run.Parameters;
+import org.pipservices.rpc.Dummy;
+import org.pipservices.rpc.DummyController;
+import org.pipservices.rpc.services.HttpEndpoint;
 
 public class DummyHttpEndpointTest {
 
-	private static final ConfigParams RestConfig = ConfigParams.fromTuples("connection.protocol", "http",
-			"connection.host", "localhost", "connection.port", 3000);
+	private static final ConfigParams RestConfig = ConfigParams.fromTuples(
+		"connection.protocol", "http",
+		"connection.host", "localhost",
+		"connection.port", 3001
+	);
 
-	private final DummyController _ctrl;
-	private final DummyCommandableHttpService _serviceV1;
-	private final DummyCommandableHttpService _serviceV2;
+	private DummyController _ctrl;
+	private DummyCommandableHttpService _serviceV1;
+	private DummyCommandableHttpService _serviceV2;
 
-	private final HttpEndpoint _httpEndpoint;
+	private HttpEndpoint _httpEndpoint;
 
-	public DummyHttpEndpointTest() throws ApplicationException, InterruptedException {
+	@Before
+	public void setUp() throws Exception {
 		_ctrl = new DummyController();
 		_serviceV1 = new DummyCommandableHttpService();
 		_serviceV2 = new DummyCommandableHttpService();
@@ -66,33 +63,36 @@ public class DummyHttpEndpointTest {
 		// _httpEndpoint.wait();
 	}
 
-	public void close() throws ApplicationException, InterruptedException {
+	@After
+	public void close() throws Exception {
 		_serviceV1.close(null);
 		_serviceV2.close(null);
 		_httpEndpoint.open(null);
 	}
 
 	@Test
-	public void itShouldPerformCRUDOperations() throws IOException {
+	public void testCrudOperations() throws Exception {
 		itShouldBeOpened();
 
 		itShouldCreateDummy();
 
 		itShouldGetDummy();
 
-		itShouldPingDummy();
+//		itShouldPingDummy();
 	}
 
 	public void itShouldBeOpened() {
 		assertTrue(_httpEndpoint.isOpen());
 	}
 
-	public void itShouldCreateDummy() throws IOException {
+	public void itShouldCreateDummy() throws Exception {
 		Dummy newDummy = new Dummy("1", "Key 1", "Content 1", true);
 
-		String result = sendPostRequest("/v1/dummy/create_dummy", newDummy);
-
-		Dummy resultDummy = JsonConverter.fromJson(Dummy.class, result);
+		Dummy resultDummy = invoke(
+			Dummy.class,
+			"/v1/dummy/create_dummy",
+			Parameters.fromTuples("dummy", newDummy)
+		);
 
 		assertNotNull(resultDummy);
 		assertNotNull(resultDummy.getId());
@@ -100,12 +100,14 @@ public class DummyHttpEndpointTest {
 		assertEquals(newDummy.getContent(), resultDummy.getContent());
 	}
 
-	public void itShouldGetDummy() throws JsonMappingException, JsonParseException, IOException {
+	public void itShouldGetDummy() throws Exception {
 		Dummy existingDummy = new Dummy("1", "Key 1", "Content 1", true);
 
-		String result = sendPostRequest("/v1/dummy/get_dummy_by_id", existingDummy.getId());
-
-		Dummy resultDummy = JsonConverter.fromJson(Dummy.class, result);
+		Dummy resultDummy = invoke(
+			Dummy.class,
+			"/v1/dummy/get_dummy_by_id",
+			Parameters.fromTuples("dummy_id", existingDummy.getId())
+		);
 
 		assertNotNull(resultDummy);
 		assertNotNull(resultDummy.getId());
@@ -113,27 +115,31 @@ public class DummyHttpEndpointTest {
 		assertEquals(existingDummy.getContent(), resultDummy.getContent());
 	}
 
-	public void itShouldPingDummy() throws JsonMappingException, JsonParseException, IOException {
-		String result = sendPostRequest("/v2/dummy/ping_dummy", new Dummy());
+//	public void itShouldPingDummy() throws JsonMappingException, JsonParseException, IOException {
+//		// Todo: There is no operation ping_dummy
+//		String result = sendPostRequest(
+//			"/v2/dummy/ping_dummy",
+//			Parameters.fromTuples("dummy", new Dummy())
+//		);
+//
+//		assertNotNull(result);
+//
+//		boolean resultPing = JsonConverter.fromJson(Boolean.class, result);
+//
+//		assertTrue(resultPing);
+//	}
 
-		assertNotNull(result);
-
-		boolean resultPing = JsonConverter.fromJson(Boolean.class, result);
-
-		assertTrue(resultPing);
-	}
-
-	// Todo
-	private static String sendPostRequest(String route, Object entity) throws JsonProcessingException {
+	private static <T> T invoke(Class<T> type, String route, Object entity) throws Exception {
 		ClientConfig clientConfig = new ClientConfig();
 		clientConfig.register(new JacksonFeature());
 		Client httpClient = ClientBuilder.newClient(clientConfig);
 
 		String content = JsonConverter.toJson(entity);
-		Response response = httpClient.target("http://localhost:3000" + route).request(MediaType.APPLICATION_JSON)
-				.post(Entity.entity(content, MediaType.APPLICATION_JSON));
+		Response response = httpClient.target("http://localhost:3001" + route)
+			.request(MediaType.APPLICATION_JSON)
+			.post(Entity.entity(content, MediaType.APPLICATION_JSON));
 
-		return response.readEntity(String.class);
+		return response.readEntity(type);
 
 	}
 

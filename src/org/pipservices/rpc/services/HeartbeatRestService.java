@@ -1,4 +1,4 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
 import java.time.ZonedDateTime;
 
@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.process.Inflector;
 import org.pipservices.commons.config.ConfigParams;
+import org.pipservices.commons.convert.StringConverter;
 import org.pipservices.commons.errors.ConfigException;
 
 public class HeartbeatRestService extends RestService {
@@ -30,6 +31,7 @@ public class HeartbeatRestService extends RestService {
 	}
 	
 	private Response heartbeat(ContainerRequestContext request) {
-		return sendResult(ZonedDateTime.now()) ;
+		String result = StringConverter.toString(ZonedDateTime.now());
+		return sendResult(result);
 	}
 }

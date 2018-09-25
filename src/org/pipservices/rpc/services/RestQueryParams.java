@@ -1,4 +1,4 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
 import java.util.*;
 

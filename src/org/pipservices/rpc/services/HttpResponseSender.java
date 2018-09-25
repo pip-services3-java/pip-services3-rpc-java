@@ -1,8 +1,7 @@
-package org.pipservices.services;
+package org.pipservices.rpc.services;
 
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 
-import org.pipservices.commons.convert.*;
 import org.pipservices.commons.errors.*;
 
 public class HttpResponseSender {
@@ -22,16 +21,16 @@ public class HttpResponseSender {
 		try {
 			if (ex instanceof ApplicationException) {
 				ApplicationException ex3 = (ApplicationException) ex;
-				String contentResult = JsonConverter.toJson(ErrorDescriptionFactory.create(ex3));
+				ErrorDescription errorDesc3 = ErrorDescriptionFactory.create(ex3);
 				return Response.status(ex3.getStatus())
-					.entity(contentResult)
-					.header("Content-Type", "application/json")
+					.type(MediaType.APPLICATION_JSON)
+					.entity(errorDesc3)
 					.build();
 			} else {
-				String contentResult = JsonConverter.toJson(ErrorDescriptionFactory.create(ex, ""));
+				ErrorDescription errorDesc = ErrorDescriptionFactory.create(ex, null);
 				return Response.status(INTERNAL_SERVER_ERROR)
-					.entity(contentResult)
-					.header("Content-Type", "application/json")
+					.type(MediaType.APPLICATION_JSON)
+					.entity(errorDesc)
 					.build();
 			}
 		} catch (Exception ex2) {
@@ -44,10 +43,9 @@ public class HttpResponseSender {
 			if (result == null) {
 				return Response.status(NO_CONTENT).build();
 			} else {
-				String contentResult = JsonConverter.toJson(result);
 				return Response.status(OK)
-					.entity(contentResult)
-					.header("Content-Type", "application/json")
+					.type(MediaType.APPLICATION_JSON)
+					.entity(result)
 					.build();
 			}
 		} catch (Exception ex2) {
@@ -64,10 +62,9 @@ public class HttpResponseSender {
 			if (result == null) {
 				return Response.status(NO_CONTENT).build();
 			} else {
-				String contentResult = JsonConverter.toJson(result);
 				return Response.status(CREATED)
-					.entity(contentResult)
-					.header("Content-Type", "application/json")
+					.type(MediaType.APPLICATION_JSON)
+					.entity(result)
 					.build();
 			}
 		} catch (Exception ex2) {
@@ -80,10 +77,9 @@ public class HttpResponseSender {
 			if (result == null) {
 				return Response.status(NO_CONTENT).build();
 			} else {
-				String contentResult = JsonConverter.toJson(result);
 				return Response.status(OK)
-					.entity(contentResult)
-					.header("Content-Type", "application/json")
+					.type(MediaType.APPLICATION_JSON)
+					.entity(result)
 					.build();
 			}
 		} catch (Exception ex2) {
