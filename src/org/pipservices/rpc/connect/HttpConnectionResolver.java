@@ -13,15 +13,68 @@ import org.pipservices.commons.errors.ConfigException;
 import org.pipservices.commons.refer.IReferenceable;
 import org.pipservices.commons.refer.IReferences;
 
+/**
+ * Helper class to retrieve connections for HTTP-based services abd clients.
+ * 
+ * In addition to regular functions of ConnectionResolver is able to parse http:// URIs
+ * and validate connection parameters before returning them.
+ * 
+ * ### Configuration parameters ###
+ * 
+ * connection:    
+ *   discovery_key:               (optional) a key to retrieve the connection from IDiscovery
+ *   ...                          other connection parameters
+ * 
+ * connections:                   alternative to connection
+ *   [connection params 1]:       first connection parameters
+ *     ...
+ *   [connection params N]:       Nth connection parameters
+ *     ...
+ * 
+ * ### References ###
+ * 
+ * - *:discovery:*:*:1.0            (optional) IDiscovery services 
+ * <p>
+ * ### Example ###
+ * <pre>
+ * {@code
+ * ConfigParams config = ConfigParams.fromTuples(
+ *      "connection.host", "10.1.1.100",
+ *      "connection.port", 8080
+ * );
+ * 
+ * HttpConnectionResolver connectionResolver = new HttpConnectionResolver();
+ * connectionResolver.configure(config);
+ * connectionResolver.setReferences(references);
+ * 
+ * ConnectionParams params = connectionResolver.resolve("123");
+ * }
+ * </pre>
+ * @see ConnectionParams 
+ * @see ConnectionResolver
+ */
 public class HttpConnectionResolver implements IReferenceable, IConfigurable {
+	/**
+	 * The base connection resolver.
+	 */
 	protected ConnectionResolver _connectionResolver = new ConnectionResolver();
 
-	public void setReferences(IReferences references) {
-		_connectionResolver.setReferences(references);
-	}
-
+	/**
+	 * Configures component by passing configuration parameters.
+	 * 
+	 * @param config configuration parameters to be set.
+	 */
 	public void configure(ConfigParams config) {
 		_connectionResolver.configure(config);
+	}
+
+	/**
+	 * Sets references to dependent components.
+	 * 
+	 * @param references references to locate the component dependencies.
+	 */
+	public void setReferences(IReferences references) {
+		_connectionResolver.setReferences(references);
 	}
 
 	private void validateConnection(String correlationId, ConnectionParams connection) throws ApplicationException {
@@ -35,7 +88,7 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 		String protocol = connection.getProtocol("http");
 		if (!"http".equals(protocol)) {
 			throw new ConfigException(correlationId, "WRONG_PROTOCOL", "Protocol is not supported by REST connection")
-				.withDetails("protocol", protocol);
+					.withDetails("protocol", protocol);
 		}
 
 		String host = connection.getHost();
@@ -61,6 +114,16 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 		}
 	}
 
+	/**
+	 * Resolves a single component connection. If connections are configured to be
+	 * retrieved from Discovery service it finds a IDiscovery and resolves the
+	 * connection there.
+	 * 
+	 * @param correlationId (optional) transaction id to trace execution through
+	 *                      call chain.
+	 * @return resolved connection.
+	 * @throws ApplicationException when error occured.
+	 */
 	public ConnectionParams resolve(String correlationId) throws ApplicationException {
 		ConnectionParams connection = _connectionResolver.resolve(correlationId);
 		validateConnection(correlationId, connection);
@@ -68,6 +131,16 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 		return connection;
 	}
 
+	/**
+	 * Resolves all component connection. If connections are configured to be
+	 * retrieved from Discovery service it finds a IDiscovery and resolves the
+	 * connection there.
+	 * 
+	 * @param correlationId (optional) transaction id to trace execution through
+	 *                      call chain.
+	 * @return resolved connections.
+	 * @throws ApplicationException when error occured.
+	 */
 	public List<ConnectionParams> resolveAll(String correlationId) throws ApplicationException {
 		List<ConnectionParams> connections = _connectionResolver.resolveAll(correlationId);
 		for (ConnectionParams connection : connections) {
@@ -77,6 +150,14 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 		return connections;
 	}
 
+	/**
+	 * Registers the given connection in all referenced discovery services. This
+	 * method can be used for dynamic service discovery.
+	 * 
+	 * @param correlationId (optional) transaction id to trace execution through
+	 *                      call chain.
+	 * @throws ApplicationException when error occured.
+	 */
 	public void register(String correlationId) throws ApplicationException {
 		ConnectionParams connection = _connectionResolver.resolve(correlationId);
 		validateConnection(correlationId, connection);
