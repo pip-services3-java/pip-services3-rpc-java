@@ -37,7 +37,7 @@ import org.pipservices.commons.errors.ConfigException;
  * - *:logger:*:*:1.0               (optional) ILogger components to pass log messages
  * - *:counters:*:*:1.0             (optional) ICounters components to pass collected measurements
  * - *:discovery:*:*:1.0            (optional) IDiscovery services to resolve connection
- * - *:endpoint:http:*:1.0          (optional) [[HttpEndpoint]] reference
+ * - *:endpoint:http:*:1.0          (optional) HttpEndpoint reference
  * <p>
  * ### Example ###
  * <pre>
@@ -93,7 +93,7 @@ public class HeartbeatRestService extends RestService {
 	/**
 	 * Handles heartbeat requests
 	 * 
-	 * @param request an HTTP request
+	 * @param request a HTTP request
 	 * @return http response to the request.
 	 */
 	private Response heartbeat(ContainerRequestContext request) {

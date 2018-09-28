@@ -56,7 +56,7 @@ import com.sun.net.httpserver.*;
  *    }
  * 
  *    public void setReferences(IReferences references) {
- *       base.setReferences(references);
+ *       super.setReferences(references);
  *       this._controller = (IMyController)this._dependencyResolver.getRequired("controller");
  *    }
  * 
@@ -77,7 +77,6 @@ import com.sun.net.httpserver.*;
  * 
  * service.open("123");
  * System.out.println("The REST service is running on port 8080");
- * });
  * }
  * </pre>
  */

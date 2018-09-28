@@ -63,7 +63,6 @@ import org.pipservices.components.info.*;
  * 
  * service.open("123");
  * System.out.println("The Status service is accessible at http://+:8080/status");
- * });
  * }
  * </pre>
  * @see RestService
