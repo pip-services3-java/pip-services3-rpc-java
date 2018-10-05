@@ -7,7 +7,7 @@ import org.pipservices.commons.refer.*;
 /**
  * Creates RPC components by their descriptors.
  * 
- * @see Factory
+ * @see <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/build/Factory.html">Factory</a>
  * @see HttpEndpoint
  * @see HeartbeatRestService
  * @see StatusRestService 
