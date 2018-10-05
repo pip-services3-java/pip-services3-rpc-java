@@ -44,9 +44,9 @@ import com.sun.net.httpserver.HttpServer;
  * A logger, counters, and a connection resolver can be referenced by passing the 
  * following references to the object's <code>setReferences()</code> method:
  * <ul>
- * <li>logger: <code>"\*:logger:\*:\*:1.0"</code>;
- * <li>counters: <code>"\*:counters:\*:\*:1.0"</code>;
- * <li>discovery: <code>"\*:discovery:\*:\*:1.0"</code> (for the connection resolver).
+ * <li>logger: <code>"*:logger:*:*:1.0"</code>;
+ * <li>counters: <code>"*:counters:*:*:1.0"</code>;
+ * <li>discovery: <code>"*:discovery:*:*:1.0"</code> (for the connection resolver).
  * </ul>
  * <p>
  * ### Examples ###

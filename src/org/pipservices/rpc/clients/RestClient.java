@@ -28,7 +28,7 @@ import org.pipservices.components.connect.*;
  * <li>base_route:              base route for remote URI
  * <li>connection(s):           
  *   <ul>
- *   <li>discovery_key:         (optional) a key to retrieve the connection from IDiscovery
+ *   <li>discovery_key:         (optional) a key to retrieve the connection from <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/connect/IDiscovery.html">IDiscovery</a>
  *   <li>protocol:              connection protocol: http or https
  *   <li>host:                  host name or IP address
  *   <li>port:                  port number
