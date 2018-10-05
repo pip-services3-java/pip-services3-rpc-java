@@ -24,26 +24,30 @@ import com.sun.net.httpserver.HttpServer;
 
 /**
  * Used for creating HTTP endpoints. An endpoint is a URL, at which a given service can be accessed by a client. 
- * 
+ * <p>
  * ### Configuration parameters ###
- * 
+ * <p>
  * Parameters to pass to the configure() method for component configuration:
- * 
- * - __connection(s)__ - the connection resolver's connections;
- *     - "connection.discovery_key" - the key to use for connection resolving in a discovery service;
- *     - "connection.protocol" - the connection's protocol;
- *     - "connection.host" - the target host;
- *     - "connection.port" - the target port;
- *     - "connection.uri" - the target URI.
- * 
+ * <ul>
+ * <li>connection(s): the connection resolver's connections;
+ *     <ul>
+ *     <li>"connection.discovery_key" - the key to use for connection resolving in a discovery service;
+ *     <li>"connection.protocol" - the connection's protocol;
+ *     <li>"connection.host" - the target host;
+ *     <li>"connection.port" - the target port;
+ *     <li>"connection.uri" - the target URI.
+ *     </ul>
+ * </ul>
+ * <p>
  * ### References ###
- * 
+ * <p>
  * A logger, counters, and a connection resolver can be referenced by passing the 
- * following references to the object's setReferences() method:
- * 
- * - logger: <code>"\*:logger:\*:\*:1.0"</code>;
- * - counters: <code>"\*:counters:\*:\*:1.0"</code>;
- * - discovery: <code>"\*:discovery:\*:\*:1.0"</code> (for the connection resolver).
+ * following references to the object's <code>setReferences()</code> method:
+ * <ul>
+ * <li>logger: <code>"\*:logger:\*:\*:1.0"</code>;
+ * <li>counters: <code>"\*:counters:\*:\*:1.0"</code>;
+ * <li>discovery: <code>"\*:discovery:\*:\*:1.0"</code> (for the connection resolver).
+ * </ul>
  * <p>
  * ### Examples ###
  * <pre>

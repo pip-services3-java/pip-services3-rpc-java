@@ -15,25 +15,30 @@ import org.pipservices.commons.refer.IReferences;
 
 /**
  * Helper class to retrieve connections for HTTP-based services abd clients.
- * 
+ * <p>
  * In addition to regular functions of ConnectionResolver is able to parse http:// URIs
  * and validate connection parameters before returning them.
- * 
+ * <p>
  * ### Configuration parameters ###
- * 
- * connection:    
- *   discovery_key:               (optional) a key to retrieve the connection from IDiscovery
- *   ...                          other connection parameters
- * 
- * connections:                   alternative to connection
- *   [connection params 1]:       first connection parameters
- *     ...
- *   [connection params N]:       Nth connection parameters
- *     ...
- * 
+ * <ul>
+ * <li>connection:    
+ *   <ul>
+ *   <li>discovery_key:               (optional) a key to retrieve the connection from <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/connect/IDiscovery.html">IDiscovery</a>
+ *   <li>...                          other connection parameters
+ *   </ul>
+ * <li>connections:                   alternative to connection
+ *   <ul>
+ *   <li>[connection params 1]:       first connection parameters
+ *   <li>...
+ *   <li>[connection params N]:       Nth connection parameters
+ *   <li>...
+ *   </ul>
+ * </ul>  
+ * <p>
  * ### References ###
- * 
- * - *:discovery:*:*:1.0            (optional) IDiscovery services 
+ * <ul>
+ * <li>*:discovery:*:*:1.0            (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/connect/IDiscovery.html">IDiscovery</a> services
+ * </ul> 
  * <p>
  * ### Example ###
  * <pre>

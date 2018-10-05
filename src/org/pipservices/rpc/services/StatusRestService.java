@@ -17,39 +17,49 @@ import org.pipservices.components.info.*;
 
 /**
  * Service that returns microservice status information via HTTP/REST protocol.
- * 
+ * <p>
  * The service responds on /status route (can be changed) with a JSON object:
+ * <p>
  * {
- *     "id":            unique container id (usually hostname)
- *     "name":          container name (from ContextInfo)
- *     "description":   container description (from ContextInfo)
- *     "start_time":    time when container was started
- *     "current_time":  current time in UTC
- *     "uptime":        duration since container start time in milliseconds
- *     "properties":    additional container properties (from ContextInfo)
- *     "components":    descriptors of components registered in the container
+ * <ul>
+ *     <li>"id":            unique container id (usually hostname)
+ *     <li>"name":          container name (from ContextInfo)
+ *     <li>"description":   container description (from ContextInfo)
+ *     <li>"start_time":    time when container was started
+ *     <li>"current_time":  current time in UTC
+ *     <li>"uptime":        duration since container start time in milliseconds
+ *     <li>"properties":    additional container properties (from ContextInfo)
+ *     <li>"components":    descriptors of components registered in the container
+ * </ul>
+ * <p>
  * }
- * 
+ * <p>
  * ### Configuration parameters ###
- * 
- * base_route:              base route for remote URI
- * route:                   status route (default: "status")
- * dependencies:
- *   endpoint:              override for HTTP Endpoint dependency
- *   controller:            override for Controller dependency
- * connection(s):           
- *   discovery_key:         (optional) a key to retrieve the connection from IDiscovery
- *   protocol:              connection protocol: http or https
- *   host:                  host name or IP address
- *   port:                  port number
- *   uri:                   resource URI or connection string with all parameters in it
- * 
+ * <ul>
+ * <li>base_route:              base route for remote URI
+ * <li>route:                   status route (default: "status")
+ * <li>dependencies:
+ *   <ul>
+ *   <li>endpoint:              override for HTTP Endpoint dependency
+ *   <li>controller:            override for Controller dependency
+ *   </ul>
+ * <li>connection(s):           
+ *   <ul>
+ *   <li>discovery_key:         (optional) a key to retrieve the connection from IDiscovery
+ *   <li>protocol:              connection protocol: http or https
+ *   <li>host:                  host name or IP address
+ *   <li>port:                  port number
+ *   <li>uri:                   resource URI or connection string with all parameters in it
+ *   </ul>
+ * </ul>
+ * <p>
  * ### References ###
- * 
- * - *:logger:*:*:1.0               (optional) ILogger components to pass log messages
- * - *:counters:*:*:1.0             (optional) ICounters components to pass collected measurements
- * - *:discovery:*:*:1.0            (optional) IDiscovery services
- * - *:endpoint:http:*:1.0          (optional) HttpEndpoint reference
+ * <ul>
+ * <li>*:logger:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/log/ILogger.html">ILogger</a> components to pass log messages
+ * <li>*:counters:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/count/ICounters.html">ICounters</a> components to pass collected measurements
+ * <li>*:discovery:*:*:1.0        (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/connect/IDiscovery.html">IDiscovery</a> services to resolve connection
+ * <li>*:endpoint:http:*:1.0          (optional) {@link HttpEndpoint} reference
+ * </ul>
  * <p>
  * ### Example ###
  * <pre>

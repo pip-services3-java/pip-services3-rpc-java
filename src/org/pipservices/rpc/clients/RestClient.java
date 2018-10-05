@@ -22,26 +22,32 @@ import org.pipservices.components.connect.*;
 
 /**
  * Abstract client that calls remove endpoints using HTTP/REST protocol.
- * 
+ * <p>
  * ### Configuration parameters ###
- * 
- * base_route:              base route for remote URI
- * connection(s):           
- *   discovery_key:         (optional) a key to retrieve the connection from IDiscovery
- *   protocol:              connection protocol: http or https
- *   host:                  host name or IP address
- *   port:                  port number
- *   uri:                   resource URI or connection string with all parameters in it
- * options:
- *   retries:               number of retries (default: 3)
- *   connect_timeout:       connection timeout in milliseconds (default: 10 sec)
- *   timeout:               invocation timeout in milliseconds (default: 10 sec)
- * 
+ * <ul>
+ * <li>base_route:              base route for remote URI
+ * <li>connection(s):           
+ *   <ul>
+ *   <li>discovery_key:         (optional) a key to retrieve the connection from IDiscovery
+ *   <li>protocol:              connection protocol: http or https
+ *   <li>host:                  host name or IP address
+ *   <li>port:                  port number
+ *   <li>uri:                   resource URI or connection string with all parameters in it
+ *   </ul>
+ * <li>options:
+ *   <ul>
+ *   <li>retries:               number of retries (default: 3)
+ *   <li>connect_timeout:       connection timeout in milliseconds (default: 10 sec)
+ *   <li>timeout:               invocation timeout in milliseconds (default: 10 sec)
+ *   </ul>
+ * </ul>
+ * <p>
  * ### References ###
- * 
- * - *:logger:*:*:1.0         (optional) ILogger components to pass log messages
- * - *:counters:*:*:1.0         (optional) ICounters components to pass collected measurements
- * - *:discovery:*:*:1.0        (optional) IDiscovery services to resolve connection
+ * <ul>
+ * <li>*:logger:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/log/ILogger.html">ILogger</a> components to pass log messages
+ * <li>*:counters:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/count/ICounters.html">ICounters</a> components to pass collected measurements
+ * <li>*:discovery:*:*:1.0        (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/connect/IDiscovery.html">IDiscovery</a> services to resolve connection
+ * </ul>
  * <p>
  * ### Example ###
  * <pre>

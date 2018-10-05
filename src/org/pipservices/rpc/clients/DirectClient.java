@@ -9,21 +9,25 @@ import org.pipservices.commons.run.*;
 
 /**
  * Abstract client that calls controller directly in the same memory space.
- * 
+ * <p>
  * It is used when multiple microservices are deployed in a single container (monolyth)
  * and communication between them can be done by direct calls rather then through 
  * the network.
- * 
+ * <p>
  * ### Configuration parameters ###
- * 
- * dependencies:
- *   controller:            override controller descriptor
- * 
+ * <ul>
+ * <li>dependencies:
+ *   <ul>
+ *   <li>controller:            override controller descriptor
+ *   </ul>
+ * </ul>
+ * <p>
  * ### References ###
- * 
- * - *:logger:*:*:1.0         (optional) ILogger components to pass log messages
- * - *:counters:*:*:1.0       (optional) ICounters components to pass collected measurements
- * - *:controller:*:*:1.0     controller to call business methods
+ * <ul>
+ * <li>*:logger:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/log/ILogger.html">ILogger</a> components to pass log messages
+ * <li>*:counters:*:*:1.0       (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/count/ICounters.html">ICounters</a> components to pass collected measurements
+ * <li>*:controller:*:*:1.0     controller to call business methods
+ * </ul>
  * <p>
  * ### Example ###
  * <pre>

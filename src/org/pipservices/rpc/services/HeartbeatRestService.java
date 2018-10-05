@@ -12,32 +12,38 @@ import org.pipservices.commons.errors.ConfigException;
 
 /**
  * Service returns heartbeat via HTTP/REST protocol.
- * 
+ * <p>
  * The service responds on /heartbeat route (can be changed)
  * with a string with the current time in UTC.
- * 
+ * <p>
  * This service route can be used to health checks by loadbalancers and 
  * container orchestrators.
- * 
+ * <p>
  * ### Configuration parameters ###
- * 
- * base_route:              base route for remote URI (default: "")
- * route:                   route to heartbeat operation (default: "heartbeat")
- * dependencies:
- *   endpoint:              override for HTTP Endpoint dependency
- * connection(s):           
- *   discovery_key:         (optional) a key to retrieve the connection from IDiscovery
- *   protocol:              connection protocol: http or https
- *   host:                  host name or IP address
- *   port:                  port number
- *   uri:                   resource URI or connection string with all parameters in it
- * 
+ * <ul>
+ * <li>base_route:              base route for remote URI (default: "")
+ * <li>route:                   route to heartbeat operation (default: "heartbeat")
+ * <li>dependencies:
+ *   <ul>
+ *   <li>endpoint:              override for HTTP Endpoint dependency
+ *   </ul>
+ * <li>connection(s):           
+ *   <ul>
+ *   <li>discovery_key:         (optional) a key to retrieve the connection from <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/connect/IDiscovery.html">IDiscovery</a>
+ *   <li>protocol:              connection protocol: http or https
+ *   <li>host:                  host name or IP address
+ *   <li>port:                  port number
+ *   <li>uri:                   resource URI or connection string with all parameters in it
+ *   </ul>
+ * </ul>
+ * <p>
  * ### References ###
- * 
- * - *:logger:*:*:1.0               (optional) ILogger components to pass log messages
- * - *:counters:*:*:1.0             (optional) ICounters components to pass collected measurements
- * - *:discovery:*:*:1.0            (optional) IDiscovery services to resolve connection
- * - *:endpoint:http:*:1.0          (optional) HttpEndpoint reference
+ * <ul>
+ * <li>*:logger:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/log/ILogger.html">ILogger</a> components to pass log messages
+ * <li>*:counters:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/count/ICounters.html">ICounters</a> components to pass collected measurements
+ * <li>*:discovery:*:*:1.0        (optional) <a href="https://raw.githubusercontent.com/pip-services-java/pip-services-components-java/master/doc/api/org/pipservices/components/connect/IDiscovery.html">IDiscovery</a> services to resolve connection
+ * <li>*:endpoint:http:*:1.0          (optional) {@link HttpEndpoint} reference
+ * </ul>
  * <p>
  * ### Example ###
  * <pre>
