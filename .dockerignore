@@ -1,0 +1,15 @@
+/.vscode
+/.git
+/.gitignore
+/.dockerignore
+/doc
+/dist
+/lib
+/obj
+/docker
+/*.sh
+/*.ps1
+/component.json
+/*.userprefs
+/*.md
+/temp
