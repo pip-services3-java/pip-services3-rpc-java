@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.pipservices</groupId>
-  <artifactId>pip-services-rpc</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
+  <artifactId>pip-services3-rpc</artifactId>
+  <version>3.0.0</version>
   <packaging>jar</packaging>
 
   <name>Pip.Services RPC</name>
@@ -34,9 +34,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:pip-services-java/pip-services-commons-java.git</connection>
-    <developerConnection>scm:git:git@github.com:pip-services-java/pip-services-commons-java.git</developerConnection>
-    <url>https://github.com/pip-services-java/pip-services-commons-java</url>
+    <connection>scm:git:git@github.com:pip-services3-java/pip-services3-commons-java.git</connection>
+    <developerConnection>scm:git:git@github.com:pip-services3-java/pip-services3-commons-java.git</developerConnection>
+    <url>https://github.com/pip-services3-java/pip-services3-commons-java</url>
   </scm>
 
   <properties>
@@ -116,7 +116,7 @@
               <nohelp>true</nohelp>
 -->
           </configuration>
-<!--
+
           <executions>
               <execution>
                   <id>attach-javadocs</id>
@@ -125,7 +125,7 @@
                   </goals>
               </execution>
           </executions>
--->
+
       </plugin>
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -176,13 +176,13 @@
   <dependencies>
     <dependency>
         <groupId>org.pipservices</groupId>
-        <artifactId>pip-services-commons</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <artifactId>pip-services3-commons</artifactId>
+        <version>3.0.0</version>
     </dependency>
     <dependency>
         <groupId>org.pipservices</groupId>
-        <artifactId>pip-services-components</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <artifactId>pip-services3-components</artifactId>
+        <version>3.0.0</version>
     </dependency>
 <!--
     <dependency>

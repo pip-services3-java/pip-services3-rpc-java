@@ -1,4 +1,4 @@
-org.pipservices.rpc.build
-org.pipservices.rpc.clients
-org.pipservices.rpc.connect
-org.pipservices.rpc.services
+org.pipservices3.rpc.build
+org.pipservices3.rpc.clients
+org.pipservices3.rpc.connect
+org.pipservices3.rpc.services
