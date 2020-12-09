@@ -24,8 +24,8 @@ import org.pipservices3.commons.run.*;
  * <p>
  * ### References ###
  * <ul>
- * <li>*:logger:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-components-java/master/doc/api/org/pipservices3/components/log/ILogger.html">ILogger</a> components to pass log messages
- * <li>*:counters:*:*:1.0       (optional) <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-components-java/master/doc/api/org/pipservices3/components/count/ICounters.html">ICounters</a> components to pass collected measurements
+ * <li>*:logger:*:*:1.0         (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/log/ILogger.html">ILogger</a> components to pass log messages
+ * <li>*:counters:*:*:1.0       (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/count/ICounters.html">ICounters</a> components to pass collected measurements
  * <li>*:controller:*:*:1.0     controller to call business methods
  * </ul>
  * <p>

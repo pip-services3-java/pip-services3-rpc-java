@@ -23,7 +23,7 @@ import org.pipservices3.commons.refer.IReferences;
  * <ul>
  * <li>connection:    
  *   <ul>
- *   <li>discovery_key:               (optional) a key to retrieve the connection from <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-components-java/master/doc/api/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a>
+ *   <li>discovery_key:               (optional) a key to retrieve the connection from <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a>
  *   <li>...                          other connection parameters
  *   </ul>
  * <li>connections:                   alternative to connection
@@ -37,7 +37,7 @@ import org.pipservices3.commons.refer.IReferences;
  * <p>
  * ### References ###
  * <ul>
- * <li>*:discovery:*:*:1.0            (optional) <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-components-java/master/doc/api/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a> services
+ * <li>*:discovery:*:*:1.0            (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a> services
  * </ul> 
  * <p>
  * ### Example ###

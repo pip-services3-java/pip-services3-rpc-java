@@ -14,7 +14,7 @@ import org.pipservices3.commons.run.*;
 
 /**
  * Abstract service that receives remove calls via HTTP/REST protocol
- * to operations automatically generated for commands defined in <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-commons-java/master/doc/api/org/pipservices3/commons/commands/ICommandable.html">ICommandable</a> components.
+ * to operations automatically generated for commands defined in <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/commons/commands/ICommandable.html">ICommandable</a> components.
  * Each command is exposed as POST operation that receives all parameters in body object.
  * <p>
  * Commandable services require only 3 lines of code to implement a robust external
@@ -30,7 +30,7 @@ import org.pipservices3.commons.run.*;
  *   </ul>
  * <li>connection(s):           
  *   <ul>
- *   <li>discovery_key:         (optional) a key to retrieve the connection from <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-components-java/master/doc/api/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a>
+ *   <li>discovery_key:         (optional) a key to retrieve the connection from <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a>
  *   <li>protocol:              connection protocol: http or https
  *   <li>host:                  host name or IP address
  *   <li>port:                  port number
@@ -40,9 +40,9 @@ import org.pipservices3.commons.run.*;
  * <p>
  * ### References ###
  * <ul>
- * <li>*:logger:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-components-java/master/doc/api/org/pipservices3/components/log/ILogger.html">ILogger</a> components to pass log messages
- * <li>*:counters:*:*:1.0         (optional) <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-components-java/master/doc/api/org/pipservices3/components/count/ICounters.html">ICounters</a> components to pass collected measurements
- * <li>*:discovery:*:*:1.0        (optional) <a href="https://raw.githubusercontent.com/pip-services3-java/pip-services3-components-java/master/doc/api/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a> services to resolve connection
+ * <li>*:logger:*:*:1.0           (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/log/ILogger.html">ILogger</a> components to pass log messages
+ * <li>*:counters:*:*:1.0         (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/count/ICounters.html">ICounters</a> components to pass collected measurements
+ * <li>*:discovery:*:*:1.0        (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a> services to resolve connection
  * <li>*:endpoint:http:*:1.0          (optional) {@link HttpEndpoint} reference
  * </ul>
  * <p>
