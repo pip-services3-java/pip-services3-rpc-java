@@ -1,20 +1,69 @@
-# <img src="https://github.com/pip-services/pip-services/raw/master/design/Logo.png" alt="Pip.Services Logo" style="max-width:30%"> <br/> Basic portable abstractions for Java
+# <img src="https://uploads-ssl.webflow.com/5ea5d3315186cf5ec60c3ee4/5edf1c94ce4c859f2b188094_logo.svg" alt="Pip.Services Logo" width="200"> <br/> Remote Procedure Calls for Java
 
-Remote Procedure Calls for Java
-This framework is a part of the Pip.Services project. It provides the following synchronous communication components:
+This module is a part of the [Pip.Services](http://pipservices.org) polyglot microservices toolkit.
 
-- **Direct** - Direct client 
-- **Rest** - RESTful services and clients
-- **Status** - Heartbeat and status services
+The rpc module provides the synchronous communication using local calls or the HTTP(S) protocol. It contains both server and client side implementations.
 
-Quick Links:
+The module contains the following packages:
+- **Build** - HTTP service factory
+- **Clients** - mechanisms for retrieving connection settings from the microservice’s configuration and providing clients and services with these settings
+- **Connect** - helper module to retrieve connections for HTTP-based services and clients
+- **Services** - basic implementation of services for connecting via the HTTP/REST protocol and using the Commandable pattern over HTTP
 
-* [Downloads](https://github.com/pip-services3-java/pip-services3-rpc-java/blob/master/doc/Downloads.md)
-* [API Reference](http://htmlpreview.github.io/?https://github.com/pip-services3-java/pip-services3-rpc-java/blob/master/doc/api/index.html)
-* [Building and Testing](https://github.com/pip-services3-java/pip-services3-rpc-java/blob/master/doc/Development.md)
-* [Contributing](https://github.com/pip-services3-java/pip-services3-rpc-java/blob/master/doc/Development.md/#contrib)
+<a name="links"></a> Quick links:
 
-## Acknowledgements
+* [Your first microservice in Java](https://www.pipservices.org/docs/quickstart/java) 
+* [Data Microservice. Step 5](https://www.pipservices.org/docs/tutorials/data-microservice/service)
+* [Microservice Facade](https://www.pipservices.org/docs/tutorials/microservice-facade/microservice-facade-main) 
+* [Client Library. Step 2](https://www.pipservices.org/docs/tutorials/client-lib/direct-client)
+* [Client Library. Step 3](https://www.pipservices.org/docs/tutorials/client-lib/http-client)
+* [API Reference](https://pip-services3-java.github.io/pip-services3-rpc-java/)
+* [Change Log](CHANGELOG.md)
+* [Get Help](https://www.pipservices.org/community/help)
+* [Contribute](https://www.pipservices.org/community/contribute)
+
+## Use
+
+Go to the pom.xml file in Maven project and add dependencies::
+```xml
+<dependency>
+  <groupId>org.pipservices3</groupId>
+  <artifactId>pip-services3-rpc</artifactId>
+  <version>3.0.0</version>
+</dependency>
+```
+
+## Develop
+
+For development you shall install the following prerequisites:
+* Java SE Development Kit 8+
+* Eclipse Java Photon or another IDE of your choice
+* Docker
+* Apache Maven
+
+Build the project:
+```bash
+mvn install
+```
+
+Run automated tests:
+```bash
+mvn test
+```
+
+Generate API documentation:
+```bash
+./docgen.ps1
+```
+
+Before committing changes run dockerized build and test as:
+```bash
+./build.ps1
+./test.ps1
+./clear.ps1
+```
+
+## Contacts
 
 The initial implementation is done by **Sergey Seroukhov**. Pip.Services team is looking for volunteers to 
 take ownership over Java implementation in the project.
