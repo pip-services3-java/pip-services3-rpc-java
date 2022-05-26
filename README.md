@@ -29,14 +29,14 @@ Go to the pom.xml file in Maven project and add dependencies::
 <dependency>
   <groupId>org.pipservices3</groupId>
   <artifactId>pip-services3-rpc</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
 </dependency>
 ```
 
 ## Develop
 
 For development you shall install the following prerequisites:
-* Java SE Development Kit 8+
+* Java SE Development Kit 11+
 * Eclipse Java Photon or another IDE of your choice
 * Docker
 * Apache Maven
@@ -65,5 +65,4 @@ Before committing changes run dockerized build and test as:
 
 ## Contacts
 
-The initial implementation is done by **Sergey Seroukhov**. Pip.Services team is looking for volunteers to 
-take ownership over Java implementation in the project.
+The initial implementation is done by **Sergey Seroukhov**.

@@ -17,7 +17,7 @@ public class DummyDirectClientTest {
         _client = new DummyDirectClient();
 
         References references = References.fromTuples(
-            new Descriptor("pip-services3-dummies", "controller", "default", "default", "1.0"), _ctrl
+            new Descriptor("pip-services-dummies", "controller", "default", "default", "1.0"), _ctrl
         );
         _client.setReferences(references);
 

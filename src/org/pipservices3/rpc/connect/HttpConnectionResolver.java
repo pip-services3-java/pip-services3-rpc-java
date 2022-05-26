@@ -1,11 +1,16 @@
 package org.pipservices3.rpc.connect;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import org.pipservices3.commons.config.ConfigParams;
 import org.pipservices3.commons.config.IConfigurable;
+import org.pipservices3.components.auth.CredentialParams;
+import org.pipservices3.components.auth.CredentialResolver;
 import org.pipservices3.components.connect.ConnectionParams;
 import org.pipservices3.components.connect.ConnectionResolver;
 import org.pipservices3.commons.errors.ApplicationException;
@@ -65,12 +70,18 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 	protected ConnectionResolver _connectionResolver = new ConnectionResolver();
 
 	/**
+	 * The base credential resolver.
+	 */
+	protected CredentialResolver _credentialResolver = new CredentialResolver();
+
+	/**
 	 * Configures component by passing configuration parameters.
 	 * 
 	 * @param config configuration parameters to be set.
 	 */
 	public void configure(ConfigParams config) {
 		_connectionResolver.configure(config);
+		_credentialResolver.configure(config);
 	}
 
 	/**
@@ -80,9 +91,10 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 	 */
 	public void setReferences(IReferences references) {
 		_connectionResolver.setReferences(references);
+		_credentialResolver.setReferences(references);
 	}
 
-	private void validateConnection(String correlationId, ConnectionParams connection) throws ApplicationException {
+	private void validateConnection(String correlationId, ConnectionParams connection, CredentialParams credential) throws ApplicationException {
 		if (connection == null)
 			throw new ConfigException(correlationId, "NO_CONNECTION", "HTTP connection is not set");
 
@@ -90,8 +102,8 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 		if (uri != null && uri.length() > 0)
 			return;
 
-		String protocol = connection.getProtocol("http");
-		if (!"http".equals(protocol)) {
+		String protocol = connection.getProtocolWithDefault("http");
+		if (!"http".equals(protocol) && !"https".equals(protocol)) {
 			throw new ConfigException(correlationId, "WRONG_PROTOCOL", "Protocol is not supported by REST connection")
 					.withDetails("protocol", protocol);
 		}
@@ -103,20 +115,71 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 		int port = connection.getPort();
 		if (port == 0)
 			throw new ConfigException(correlationId, "NO_PORT", "Connection port is not set");
+
+		// Check HTTPS credentials
+		if (protocol.equals("https")) {
+			// Check for credential
+			if (credential == null) {
+				throw new ConfigException(
+						correlationId, "NO_CREDENTIAL", "SSL certificates are not configured for HTTPS protocol");
+			} else {
+				// Sometimes when we use https we are on an internal network and do not want to have to deal with security.
+				// When we need a https connection and we don't want to pass credentials, flag is 'credential.internal_network',
+				// this flag just has to be present and non null for this functionality to work.
+				if (credential.getAsNullableString("internal_network") == null) {
+					if (credential.getAsNullableString("ssl_key_file") == null) {
+						throw new ConfigException(
+								correlationId, "NO_SSL_KEY_FILE", "SSL key file is not configured in credentials");
+					} else if (credential.getAsNullableString("ssl_crt_file") == null) {
+						throw new ConfigException(
+								correlationId, "NO_SSL_CRT_FILE", "SSL crt file is not configured in credentials");
+					}
+				}
+			}
+		}
 	}
 
-	private void updateConnection(ConnectionParams connection) {
-		if (connection.getUri() == null || connection.getUri().length() == 0) {
-			String uri = connection.getProtocol() + "://" + connection.getHost();
-			if (connection.getPort() != 0)
-				uri += ":" + connection.getPort();
-			connection.setUri(uri);
+	private ConnectionParams composeConnection(List<ConnectionParams> connections, CredentialParams credential) {
+		var unpackConn = new ConfigParams[connections.size()];
+
+		AtomicInteger i = new AtomicInteger();
+		connections.forEach(
+				(c) -> {
+					unpackConn[i.get()] = ConfigParams.fromValue(c);
+					i.getAndIncrement();
+				}
+		);
+
+		var connection = ConnectionParams.mergeConfigs(unpackConn);
+
+		var uri = connection.getAsString("uri");
+
+		if (uri == null || uri.equals("")) {
+			var protocol = connection.getAsStringWithDefault("protocol", "http");
+			var host = connection.getAsString("host");
+			var port = connection.getAsInteger("port");
+
+			uri = protocol + "://" + host;
+			if (port > 0) {
+				uri += ":" + port;
+			}
+			connection.setAsObject("uri", uri);
 		} else {
-			URI uri = UriBuilder.fromUri(connection.getUri()).build();
-			connection.setProtocol(uri.getScheme());
-			connection.setHost(uri.getHost());
-			connection.setPort(uri.getPort());
+			var address = URI.create(uri);
+			var protocol = address.getScheme();
+
+			connection.setAsObject("protocol", protocol);
+			connection.setAsObject("host", address.getHost());
+			connection.setAsObject("port", address.getPort());
 		}
+
+		if (Objects.equals(connection.getAsString("protocol"), "https") && credential != null) {
+			if (credential.getAsNullableString("internal_network") == null) {
+				connection =  connection.override(credential);
+			}
+		}
+
+		return ConnectionParams.fromConfig(connection);
 	}
 
 	/**
@@ -131,9 +194,9 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 	 */
 	public ConnectionParams resolve(String correlationId) throws ApplicationException {
 		ConnectionParams connection = _connectionResolver.resolve(correlationId);
-		validateConnection(correlationId, connection);
-		updateConnection(connection);
-		return connection;
+		CredentialParams credential = _credentialResolver.lookup(correlationId);
+		this.validateConnection(correlationId, connection, credential);
+		return this.composeConnection(List.of(connection), credential);
 	}
 
 	/**
@@ -146,13 +209,15 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 	 * @return resolved connections.
 	 * @throws ApplicationException when error occured.
 	 */
-	public List<ConnectionParams> resolveAll(String correlationId) throws ApplicationException {
-		List<ConnectionParams> connections = _connectionResolver.resolveAll(correlationId);
-		for (ConnectionParams connection : connections) {
-			validateConnection(correlationId, connection);
-			updateConnection(connection);
-		}
-		return connections;
+	public ConnectionParams resolveAll(String correlationId) throws ApplicationException {
+		var connections = this._connectionResolver.resolveAll(correlationId);
+		var credential = this._credentialResolver.lookup(correlationId);
+
+		connections = connections != null ? connections : new ArrayList<>();
+		for (var connection : connections)
+			this.validateConnection(correlationId, connection, credential);
+
+		return this.composeConnection(connections, credential);
 	}
 
 	/**
@@ -164,9 +229,13 @@ public class HttpConnectionResolver implements IReferenceable, IConfigurable {
 	 * @throws ApplicationException when error occured.
 	 */
 	public void register(String correlationId) throws ApplicationException {
-		ConnectionParams connection = _connectionResolver.resolve(correlationId);
-		validateConnection(correlationId, connection);
-		_connectionResolver.register(correlationId, connection);
+		var connection = this._connectionResolver.resolve(correlationId);
+		var credential = this._credentialResolver.lookup(correlationId);
+
+		// Validate connection
+		this.validateConnection(correlationId, connection, credential);
+
+		this._connectionResolver.register(correlationId, connection);
 	}
 
 }

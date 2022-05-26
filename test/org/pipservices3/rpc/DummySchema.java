@@ -1,6 +1,7 @@
 package org.pipservices3.rpc;
 
 import org.pipservices3.commons.convert.TypeCode;
+import org.pipservices3.commons.validate.ArraySchema;
 import org.pipservices3.commons.validate.ObjectSchema;
 
 public class DummySchema extends ObjectSchema {
@@ -9,6 +10,6 @@ public class DummySchema extends ObjectSchema {
 		withOptionalProperty("id", TypeCode.String);
 		withRequiredProperty("key", TypeCode.String);
 		withOptionalProperty("content", TypeCode.String);
-		withOptionalProperty("flag", TypeCode.Boolean);
+		withOptionalProperty("array", new ArraySchema(new SubDummySchema()));
 	}
 }

@@ -13,13 +13,11 @@ import org.pipservices3.commons.refer.*;
  * @see StatusRestService 
  */
 public class DefaultRpcFactory extends Factory {
-
-	public static final Descriptor Descriptor = new Descriptor("pip-services3", "factory", "net", "default", "1.0");
-	public static final Descriptor HttpEndpointDescriptor = new Descriptor("pip-services3", "endpoint", "http", "*",
+	public static final Descriptor HttpEndpointDescriptor = new Descriptor("pip-services", "endpoint", "http", "*",
 			"1.0");
-	public static final Descriptor StatusServiceDescriptor = new Descriptor("pip-services3", "status-service", "http",
+	public static final Descriptor StatusServiceDescriptor = new Descriptor("pip-services", "status-service", "http",
 			"*", "1.0");
-	public static final Descriptor HeartbeatServiceDescriptor = new Descriptor("pip-services3", "heartbeat-service",
+	public static final Descriptor HeartbeatServiceDescriptor = new Descriptor("pip-services", "heartbeat-service",
 			"http", "*", "1.0");
 
 	/**

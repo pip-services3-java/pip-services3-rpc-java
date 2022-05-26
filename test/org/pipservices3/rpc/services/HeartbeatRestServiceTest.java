@@ -3,8 +3,8 @@ package org.pipservices3.rpc.services;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
+import jakarta.ws.rs.client.*;
+import jakarta.ws.rs.core.*;
 
 import static org.junit.Assert.*;
 

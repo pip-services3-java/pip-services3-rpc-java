@@ -1,6 +1,9 @@
 package org.pipservices3.rpc.clients;
 
 import org.junit.*;
+
+import static org.junit.Assert.*;
+
 import org.pipservices3.commons.config.*;
 import org.pipservices3.commons.errors.*;
 import org.pipservices3.commons.refer.*;
@@ -9,62 +12,64 @@ import org.pipservices3.rpc.services.*;
 
 public class DummyCommandableHttpClientTest {
 
-	private static final ConfigParams RestConfig = ConfigParams.fromTuples(
-			"connection.uri", "http://localhost:3006"
-		// "connection.protocol", "http",
-		// "connection.host", "localhost",
-		// "connection.port", 3000
-	);
+    private static final ConfigParams RestConfig = ConfigParams.fromTuples(
+            "connection.protocol", "http",
+            "connection.host", "localhost",
+            "connection.port", 3000
+    );
 
-	private DummyController _ctrl;
-	private DummyCommandableHttpClient _client;
-	private DummyClientFixture _fixture;
-	private DummyCommandableHttpService _service;
+    private DummyController _ctrl;
+    private DummyCommandableHttpClient _client;
+    private DummyClientFixture _fixture;
+    private DummyCommandableHttpService _service;
 
-	@Before
-	public void setUp() throws Exception {
-		_ctrl = new DummyController();
+    @Before
+    public void setUp() throws Exception {
+        _ctrl = new DummyController();
 
-		_service = new DummyCommandableHttpService();
-		_client = new DummyCommandableHttpClient();
+        _service = new DummyCommandableHttpService();
+        _client = new DummyCommandableHttpClient();
 
-		_service.configure(RestConfig);
-		_client.configure(RestConfig);
-		
-		References references = References.fromTuples(
-			new Descriptor("pip-services3-dummies", "controller", "default", "default", "1.0"), _ctrl,
-			new Descriptor("pip-services3-dummies", "service", "rest", "default", "1.0"), _service,
-			new Descriptor("pip-services3-dummies", "client", "rest", "default", "1.0"), _client
-		);
+        _service.configure(RestConfig);
+        _client.configure(RestConfig);
 
-		_client.setReferences(references);
-		_service.setReferences(references);
+        References references = References.fromTuples(
+                new Descriptor("pip-services-dummies", "controller", "default", "default", "1.0"), _ctrl,
+                new Descriptor("pip-services-dummies", "service", "rest", "default", "1.0"), _service
+        );
 
-		_service.open(null);
-		_client.open(null);
+        _client.setReferences(references);
+        _service.setReferences(references);
 
-		_fixture = new DummyClientFixture(_client);
-	}
+        _service.open(null);
+        _client.open(null);
 
-	@After
-	public void tearDown() throws Exception {
-		_client.close(null);
-		_service.close(null);
-	}
+        _fixture = new DummyClientFixture(_client);
+    }
 
-	@Test
-	public void testCrudOperations() throws ApplicationException {
-		_fixture.testCrudOperations();
-	}
+    @After
+    public void tearDown() throws Exception {
+        _client.close(null);
+        _service.close(null);
+    }
 
-	@Test
-	public void testExceptionPropagation() {
-		try {
-			_client.raiseException("123");
-			//_client.wait();
-		} catch (Exception ex) {
-			System.err.println(ex.getMessage());
-		}
-	}
+    @Test
+    public void testCrudOperations() throws ApplicationException {
+        _fixture.testCrudOperations();
+    }
+
+    @Test
+    public void testExceptionPropagation() {
+        ApplicationException err = null;
+        try {
+            _client.raiseException("123");
+            //_client.wait();
+        } catch (ApplicationException ex) {
+            err = ex;
+        }
+
+        assertNotNull(err);
+        assertEquals(err.getCode(), "TEST_ERROR");
+    }
 
 }

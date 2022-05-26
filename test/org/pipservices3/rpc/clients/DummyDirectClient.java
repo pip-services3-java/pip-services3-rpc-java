@@ -12,56 +12,108 @@ import org.pipservices3.rpc.clients.DirectClient;
 public class DummyDirectClient extends DirectClient<IDummyController> implements IDummyClient {
 
 	public DummyDirectClient() {
-		_dependencyResolver.put("controller", new Descriptor("pip-services3-dummies", "controller", "*", "*", "*"));
+		_dependencyResolver.put("controller", new Descriptor("pip-services-dummies", "controller", "*", "*", "*"));
 	}
 
 	@Override
-	public boolean isOpen() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public DataPage<Dummy> getPageByFilter(String correlationId, FilterParams filter, PagingParams paging)
+	public DataPage<Dummy> getDummies(String correlationId, FilterParams filter, PagingParams paging)
 		throws ApplicationException {
 		
 		filter = filter != null ? filter : new FilterParams();
 		paging = paging != null ? paging : new PagingParams();
 
-//        Timing timing = instrument(correlationId, "dummy.get_page_by_filter");
-		{
+		var timing = this.instrument(correlationId, "dummy.get_page_by_filter");
+		try {
 			return _controller.getPageByFilter(correlationId, filter, paging);
+		} catch (Exception ex) {
+			timing.endFailure(ex);
+			throw ex;
+		} finally {
+			timing.endTiming();
 		}
 	}
 
 	@Override
-	public Dummy getOneById(String correlationId, String id)
+	public Dummy getDummyById(String correlationId, String id)
 		throws ApplicationException {
-		return _controller.getOneById(correlationId, id);
+		var timing = this.instrument(correlationId, "dummy.get_one_by_id");
+		try {
+			return _controller.getOneById(correlationId, id);
+		} catch (Exception ex) {
+			timing.endFailure(ex);
+			throw ex;
+		} finally {
+			timing.endTiming();
+		}
 	}
 
 	@Override
-	public Dummy create(String correlationId, Dummy entity) 
+	public Dummy createDummy(String correlationId, Dummy entity)
 		throws ApplicationException {
-		return _controller.create(correlationId, entity);
+		var timing = this.instrument(correlationId, "dummy.create");
+		try {
+			return _controller.create(correlationId, entity);
+		} catch (Exception ex) {
+			timing.endFailure(ex);
+			throw ex;
+		} finally {
+			timing.endTiming();
+		}
 	}
 
 	@Override
-	public Dummy update(String correlationId, Dummy entity) 
+	public Dummy updateDummy(String correlationId, Dummy entity)
 		throws ApplicationException {
-		return _controller.update(correlationId, entity);
+		var timing = this.instrument(correlationId, "dummy.update");
+		try {
+			return _controller.update(correlationId, entity);
+		} catch (Exception ex) {
+			timing.endFailure(ex);
+			throw ex;
+		} finally {
+			timing.endTiming();
+		}
 	}
 
 	@Override
-	public Dummy deleteById(String correlationId, String id)  
+	public Dummy deleteDummy(String correlationId, String id)
 		throws ApplicationException {
-		return _controller.deleteById(correlationId, id);
+		var timing = this.instrument(correlationId, "dummy.delete_by_id");
+		try {
+			return _controller.deleteById(correlationId, id);
+		} catch (Exception ex) {
+			timing.endFailure(ex);
+			throw ex;
+		} finally {
+			timing.endTiming();
+		}
+	}
+
+	@Override
+	public String checkCorrelationId(String correlationId) throws ApplicationException {
+		var timing = this.instrument(correlationId, "dummy.check_correlation_id");
+		try {
+			return this._controller.checkCorrelationId(correlationId);
+		} catch (Exception ex) {
+			timing.endFailure(ex);
+			throw ex;
+		} finally {
+			timing.endTiming();
+		}
 	}
 
 	@Override
 	public void raiseException(String correlationId) 
 		throws ApplicationException {
-		_controller.raiseException(correlationId);
+		var timing = this.instrument(correlationId, "dummy.raise_exception");
+		try {
+			_controller.raiseException(correlationId);
+		} catch (Exception ex) {
+			timing.endFailure(ex);
+			throw ex;
+		} finally {
+			timing.endTiming();
+		}
 
 	}
 

@@ -2,8 +2,8 @@ package org.pipservices3.rpc.services;
 
 import java.time.ZonedDateTime;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Response;
 
 import org.glassfish.jersey.process.Inflector;
 import org.pipservices3.commons.config.ConfigParams;

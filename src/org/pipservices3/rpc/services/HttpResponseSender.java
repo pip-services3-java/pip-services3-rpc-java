@@ -1,6 +1,6 @@
 package org.pipservices3.rpc.services;
 
-import javax.ws.rs.core.*;
+import jakarta.ws.rs.core.*;
 
 import org.pipservices3.commons.errors.*;
 

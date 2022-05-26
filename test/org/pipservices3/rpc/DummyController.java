@@ -8,7 +8,7 @@ import org.pipservices3.commons.data.*;
 import org.pipservices3.commons.errors.*;
 
 public class DummyController implements IDummyController, ICommandable {
-	private Object _lock = new Object();
+	private final Object _lock = new Object();
 	private List<Dummy> _entities = new ArrayList<Dummy>();
 
 	private DummyCommandSet _commandSet;
@@ -57,8 +57,7 @@ public class DummyController implements IDummyController, ICommandable {
 	}
 
 	@Override
-	public Dummy getOneById(String correlationId, String id)
-		throws ApplicationException {
+	public Dummy getOneById(String correlationId, String id) {
 		
 		synchronized (_lock) {
 			for (Dummy entity : _entities) {
@@ -70,8 +69,7 @@ public class DummyController implements IDummyController, ICommandable {
 	}
 
 	@Override
-	public Dummy create(String correlationId, Dummy entity) 
-		throws ApplicationException {
+	public Dummy create(String correlationId, Dummy entity) {
 		
 		synchronized (_lock) {
 			if (entity.getId() == null)
@@ -83,8 +81,7 @@ public class DummyController implements IDummyController, ICommandable {
 	}
 
 	@Override
-	public Dummy update(String correlationId, Dummy newEntity) 
-		throws ApplicationException {
+	public Dummy update(String correlationId, Dummy newEntity) {
 		
 		synchronized (_lock) {
 			for (int index = 0; index < _entities.size(); index++) {
@@ -99,8 +96,7 @@ public class DummyController implements IDummyController, ICommandable {
 	}
 
 	@Override
-	public Dummy deleteById(String correlationId, String id) 
-		throws ApplicationException {
+	public Dummy deleteById(String correlationId, String id) {
 		
 		synchronized (_lock) {
 			for (int index = 0; index < _entities.size(); index++) {
@@ -115,7 +111,12 @@ public class DummyController implements IDummyController, ICommandable {
 	}
 
 	@Override
-	public void raiseException(String correlationId) 
+	public String checkCorrelationId(String correlationId) {
+		return correlationId;
+	}
+
+	@Override
+	public void raiseException(String correlationId)
 		throws ApplicationException {
 
 		throw new NotFoundException(correlationId, "TEST_ERROR", "Dummy error in controller!");

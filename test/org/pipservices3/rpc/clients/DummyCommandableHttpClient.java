@@ -1,11 +1,14 @@
 package org.pipservices3.rpc.clients;
 
-import javax.ws.rs.core.*;
+import jakarta.ws.rs.core.*;
 
 import org.pipservices3.commons.data.*;
 import org.pipservices3.commons.errors.*;
 import org.pipservices3.commons.run.*;
 import org.pipservices3.rpc.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DummyCommandableHttpClient extends CommandableHttpClient implements IDummyClient{
 
@@ -14,8 +17,8 @@ public class DummyCommandableHttpClient extends CommandableHttpClient implements
 	}
 
 	@Override
-	public DataPage<Dummy> getPageByFilter(String correlationId,
-		FilterParams filter, PagingParams paging) throws ApplicationException {
+	public DataPage<Dummy> getDummies(String correlationId,
+									  FilterParams filter, PagingParams paging) throws ApplicationException {
 		
 		return callCommand(
 			new GenericType<DataPage<Dummy>>() {},
@@ -29,7 +32,7 @@ public class DummyCommandableHttpClient extends CommandableHttpClient implements
 	}
 
 	@Override
-	public Dummy getOneById(String correlationId, String id) throws ApplicationException {
+	public Dummy getDummyById(String correlationId, String id) throws ApplicationException {
 		return callCommand(
 			Dummy.class,
 			"get_dummy_by_id",
@@ -39,7 +42,7 @@ public class DummyCommandableHttpClient extends CommandableHttpClient implements
 	}
 
 	@Override
-	public Dummy create(String correlationId, Dummy entity) throws ApplicationException {
+	public Dummy createDummy(String correlationId, Dummy entity) throws ApplicationException {
 		return callCommand(
 			Dummy.class,
 			"create_dummy",
@@ -49,7 +52,7 @@ public class DummyCommandableHttpClient extends CommandableHttpClient implements
 	}
 
 	@Override
-	public Dummy update(String correlationId, Dummy entity) throws ApplicationException {
+	public Dummy updateDummy(String correlationId, Dummy entity) throws ApplicationException {
 		return callCommand(
 			Dummy.class,
 			"update_dummy",
@@ -59,13 +62,25 @@ public class DummyCommandableHttpClient extends CommandableHttpClient implements
 	}
 
 	@Override
-	public Dummy deleteById(String correlationId, String id) throws ApplicationException {
+	public Dummy deleteDummy(String correlationId, String id) throws ApplicationException {
 		return callCommand(
 			Dummy.class,
 			"delete_dummy",
 			correlationId,
 			Parameters.fromTuples("dummy_id", id)
 		);
+	}
+
+	@Override
+	public String checkCorrelationId(String correlationId) throws ApplicationException {
+		Map<String, String> res =  callCommand(
+				HashMap.class,
+				"check_correlation_id",
+				correlationId,
+				null
+		);
+
+		return res.get("correlation_id");
 	}
 
 	@Override

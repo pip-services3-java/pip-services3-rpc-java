@@ -1,7 +1,7 @@
 package org.pipservices3.rpc.clients;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 
 import org.pipservices3.commons.errors.*;
 
@@ -35,6 +35,7 @@ import org.pipservices3.commons.errors.*;
  * <ul>
  * <li>*:logger:*:*:1.0         (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/log/ILogger.html">ILogger</a> components to pass log messages
  * <li>*:counters:*:*:1.0         (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/count/ICounters.html">ICounters</a> components to pass collected measurements
+ * <li>*:tracer:*:*:1.0        (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/trace/ITracer.html">ITracer</a> components to record traces
  * <li>*:discovery:*:*:1.0        (optional) <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a> services to resolve connection
  * </ul>
  * <p>
@@ -93,7 +94,7 @@ public class CommandableHttpClient extends RestClient {
 	 */
 	public <T> T callCommand(Class<T> type, String route, String correlationId, Object entity)
 			throws ApplicationException {
-		return execute(type, correlationId, HttpMethod.POST, route, entity);
+		return call(type, correlationId, HttpMethod.POST, route, entity);
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class CommandableHttpClient extends RestClient {
 	 */
 	public <T> T callCommand(GenericType<T> type, String route, String correlationId, Object entity)
 			throws ApplicationException {
-		return execute(type, correlationId, HttpMethod.POST, route, entity);
+		return call(type, correlationId, HttpMethod.POST, route, entity);
 	}
 
 }

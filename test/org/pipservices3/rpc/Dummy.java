@@ -4,19 +4,22 @@ import org.pipservices3.commons.data.*;
 
 import com.fasterxml.jackson.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Dummy implements IStringIdentifiable {
 	private String _id;
 	private String _key;
 	private String _content;
-	private boolean _flag = true;
+	private List<SubDummy> _array = new ArrayList<>();
 	
 	public Dummy() {}
 
-	public Dummy(String id, String key, String content, boolean flag) {
+	public Dummy(String id, String key, String content, List<SubDummy> array) {
 		_id = id;
 		_key = key;
 		_content = content;
-		_flag = flag;
+		_array = array;
 	}
 	
 	@JsonProperty("id")
@@ -31,7 +34,7 @@ public class Dummy implements IStringIdentifiable {
 	public String getContent() { return _content; }
 	public void setContent(String value) { _content = value; }
 
-	@JsonProperty("flag")
-	public boolean getFlag() {	return _flag;	}
-	public void setFlag(boolean _flag) { this._flag = _flag; }	
+	@JsonProperty("array")
+	public List<SubDummy> getArray() {	return _array;	}
+	public void setArray(List<SubDummy> value) { this._array = value; }
 }

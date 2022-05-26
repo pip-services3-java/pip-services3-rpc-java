@@ -3,10 +3,10 @@ package org.pipservices3.rpc.services;
 import java.time.*;
 import java.util.*;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Response;
 
-import org.glassfish.jersey.process.*;
+import org.glassfish.jersey.process.Inflector;
 import org.pipservices3.commons.config.*;
 import org.pipservices3.commons.convert.*;
 import org.pipservices3.commons.data.*;
@@ -43,7 +43,7 @@ import org.pipservices3.components.info.*;
  *   <li>endpoint:              override for HTTP Endpoint dependency
  *   <li>controller:            override for Controller dependency
  *   </ul>
- * <li>connection(s):           
+ * <li>connection(s):
  *   <ul>
  *   <li>discovery_key:         (optional) a key to retrieve the connection from IDiscovery
  *   <li>protocol:              connection protocol: http or https
@@ -70,82 +70,92 @@ import org.pipservices3.components.info.*;
  *     "connection.host", "localhost",
  *     "connection.port", 8080
  * ));
- * 
+ *
  * service.open("123");
  * System.out.println("The Status service is accessible at http://+:8080/status");
  * }
  * </pre>
+ *
  * @see RestService
  */
 public class StatusRestService extends RestService {
-	private ZonedDateTime _startTime = ZonedDateTime.now();
-	private IReferences _references;
-	private ContextInfo _contextInfo;
-	private String _route = "status";
+    private final ZonedDateTime _startTime = ZonedDateTime.now();
+    private IReferences _references;
+    private ContextInfo _contextInfo;
+    private String _route = "status";
 
-	/**
-	 * Creates a new instance of this service.
-	 */
-	public StatusRestService() {
-		_dependencyResolver.put("context-info", new Descriptor("pip-services3", "context-info", "default", "*", "1.0"));
-	}
+    /**
+     * Creates a new instance of this service.
+     */
+    public StatusRestService() {
+        _dependencyResolver.put("context-info", new Descriptor("pip-services", "context-info", "default", "*", "1.0"));
+    }
 
-	/**
-	 * Configures component by passing configuration parameters.
-	 * 
-	 * @param config configuration parameters to be set.
-	 * @throws ConfigException when configuration is wrong.
-	 */
-	public void configure(ConfigParams config) throws ConfigException {
-		super.configure(config);
+    /**
+     * Configures component by passing configuration parameters.
+     *
+     * @param config configuration parameters to be set.
+     * @throws ConfigException when configuration is wrong.
+     */
+    @Override
+    public void configure(ConfigParams config) throws ConfigException {
+        super.configure(config);
 
-		_route = config.getAsStringWithDefault("route", _route);
-	}
+        _route = config.getAsStringWithDefault("route", _route);
+    }
 
-	/**
-	 * Sets references to dependent components.
-	 * 
-	 * @param references references to locate the component dependencies.
-	 * @throws ReferenceException when no found references.
-	 * @throws ConfigException    when configuration is wrong.
-	 */
-	public void setReferences(IReferences references) throws ReferenceException, ConfigException {
-		_references = references;
-		super.setReferences(references);
+    /**
+     * Sets references to dependent components.
+     *
+     * @param references references to locate the component dependencies.
+     * @throws ReferenceException when no found references.
+     * @throws ConfigException    when configuration is wrong.
+     */
+    @Override
+    public void setReferences(IReferences references) throws ReferenceException, ConfigException {
+        _references = references;
+        super.setReferences(references);
 
-		_contextInfo = (ContextInfo) _dependencyResolver.getOneOptional("context-info");
-	}
+        _contextInfo = (ContextInfo) _dependencyResolver.getOneOptional("context-info");
+    }
 
-	/**
-	 * Registers all service routes in HTTP endpoint.
-	 */
-	public void register() {
-		registerRoute("get", _route, new Inflector<ContainerRequestContext, Response>() {
-			@Override
-			public Response apply(ContainerRequestContext request) {
-				return status(request);
-			}
-		});
-	}
+    /**
+     * Registers all service routes in HTTP endpoint.
+     */
+    @Override
+    public void register() {
+        registerRoute("get", _route, new Inflector<ContainerRequestContext, Response>() {
+            @Override
+            public Response apply(ContainerRequestContext request) {
+                return status(request);
+            }
+        });
+    }
 
-	private Response status(ContainerRequestContext request) {
-		String id = _contextInfo != null ? _contextInfo.getContextId() : "";
-		String name = _contextInfo != null ? _contextInfo.getName() : "Unknown";
-		String description = _contextInfo != null ? _contextInfo.getDescription() : "";
-		long uptime = Duration.between(_startTime, ZonedDateTime.now()).toMillis();
-		StringValueMap properties = _contextInfo.getProperties();
+    /**
+     * Handles status requests
+     *
+     * @param request an HTTP request
+     * @return res   an HTTP response
+     */
+    private Response status(ContainerRequestContext request) {
+        String id = _contextInfo != null ? _contextInfo.getContextId() : "";
+        String name = _contextInfo != null ? _contextInfo.getName() : "Unknown";
+        String description = _contextInfo != null ? _contextInfo.getDescription() : "";
+        long uptime = Duration.between(_startTime, ZonedDateTime.now()).toMillis();
+        StringValueMap properties = _contextInfo != null ? _contextInfo.getProperties() : null;
 
-		List<String> components = new ArrayList<String>();
-		if (_references != null) {
-			for (Object locator : _references.getAllLocators())
-				components.add(locator.toString());
-		}
+        List<String> components = new ArrayList<>();
+        if (_references != null) {
+            for (Object locator : _references.getAllLocators())
+                components.add(locator.toString());
+        }
 
-		Parameters status = Parameters.fromTuples("id", id, "name", name, "description", description, "start_time",
-				StringConverter.toString(_startTime), "current_time", StringConverter.toString(ZonedDateTime.now()),
-				"uptime", uptime, "properties", properties, "components", components);
+        Parameters status = Parameters.fromTuples("id", id, "name", name, "description", description, "start_time",
+                StringConverter.toString(_startTime), "current_time", StringConverter.toString(ZonedDateTime.now()),
+                "uptime", uptime, "properties", properties, "components", components);
 
-		return sendResult(status);
-	}
+        return sendResult(status);
+    }
 
 }

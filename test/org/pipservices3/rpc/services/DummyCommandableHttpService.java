@@ -7,7 +7,7 @@ public class DummyCommandableHttpService extends CommandableHttpService{
 
 	public DummyCommandableHttpService() {
 		super("dummy");
-		_dependencyResolver.put("controller", new Descriptor("pip-services3-dummies", "controller", "default", "*", "1.0"));
+		_dependencyResolver.put("controller", new Descriptor("pip-services-dummies", "controller", "default", "*", "1.0"));
 	}
 
 }

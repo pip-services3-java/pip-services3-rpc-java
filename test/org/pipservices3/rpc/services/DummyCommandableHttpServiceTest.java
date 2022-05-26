@@ -4,58 +4,69 @@ import org.junit.*;
 
 import static org.junit.Assert.*;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
+import jakarta.ws.rs.client.*;
+import jakarta.ws.rs.core.*;
 
 import org.glassfish.jersey.client.*;
 import org.glassfish.jersey.jackson.*;
 import org.pipservices3.commons.config.*;
+import org.pipservices3.commons.convert.JsonConverter;
 import org.pipservices3.commons.data.*;
+import org.pipservices3.commons.errors.ErrorDescription;
 import org.pipservices3.commons.refer.*;
 import org.pipservices3.commons.run.*;
+import org.pipservices3.components.log.ConsoleLogger;
 import org.pipservices3.rpc.*;
 
+import java.util.List;
+import java.util.Map;
+
 public class DummyCommandableHttpServiceTest {
-    private final Dummy DUMMY1 = new Dummy(null, "Key 1", "Content 1", true);
-    private final Dummy DUMMY2 = new Dummy(null, "Key 2", "Content 2", true);
+    private final Dummy DUMMY1 = new Dummy(null, "Key 1", "Content 1",
+            List.of(new SubDummy("SubKey 1", "SubContent 1")));
+    private final Dummy DUMMY2 = new Dummy(null, "Key 2", "Content 2",
+            List.of(new SubDummy("SubKey 2", "SubContent 2")));
 
-	private static final ConfigParams RestConfig = ConfigParams.fromTuples(
-		"connection.protocol", "http",
-		"connection.host", "localhost",
-		"connection.port", 3003
-	);
+    private static final ConfigParams RestConfig = ConfigParams.fromTuples(
+            "connection.protocol", "http",
+            "connection.host", "localhost",
+            "connection.port", 3003
+    );
 
-	private DummyController _ctrl;
-	private DummyCommandableHttpService _service;
+    private DummyController _ctrl;
+    private DummyCommandableHttpService _service;
 
-	@Before
-	public void setUp() throws Exception {
-		_ctrl = new DummyController();
-		_service = new DummyCommandableHttpService();
+    @Before
+    public void setUp() throws Exception {
+        _ctrl = new DummyController();
+        _service = new DummyCommandableHttpService();
 
-		References references = References.fromTuples(
-			new Descriptor("pip-services3-dummies", "controller", "default", "default", "1.0"), _ctrl
-		);
+        _service.configure(RestConfig);
 
-		_service.configure(RestConfig);
-		_service.setReferences(references);
+        References references = References.fromTuples(
+                new Descriptor("pip-services-dummies", "controller", "default", "default", "1.0"), _ctrl,
+                new Descriptor("pip-services-dummies", "service", "http", "default", "1.0"), _service,
+                new Descriptor("pip-services-dummies", "logger", "*", "*", "*"), new ConsoleLogger()
+        );
 
-		_service.open(null);
-	}
+        _service.setReferences(references);
 
-	@After
-	public void close() throws Exception {
-		_service.close(null);
-	}
+        _service.open(null);
+    }
 
-	@Test
-	public void testCrudOperations() throws Exception {
+    @After
+    public void close() throws Exception {
+        _service.close(null);
+    }
+
+    @Test
+    public void testCrudOperations() throws Exception {
         // Create one dummy
         Dummy dummy1 = invoke(
-			Dummy.class,
-			"/dummy/create_dummy",
-			Parameters.fromTuples("dummy", DUMMY1)
-		);
+                Dummy.class,
+                "/dummy/create_dummy",
+                Parameters.fromTuples("dummy", DUMMY1)
+        );
 
         assertNotNull(dummy1);
         assertNotNull(dummy1.getId());
@@ -64,10 +75,10 @@ public class DummyCommandableHttpServiceTest {
 
         // Create another dummy
         Dummy dummy2 = invoke(
-			Dummy.class,
-			"/dummy/create_dummy",
-			Parameters.fromTuples("dummy", DUMMY2)
-		);
+                Dummy.class,
+                "/dummy/create_dummy",
+                Parameters.fromTuples("dummy", DUMMY2)
+        );
 
         assertNotNull(dummy2);
         assertNotNull(dummy2.getId());
@@ -76,62 +87,117 @@ public class DummyCommandableHttpServiceTest {
 
         // Get all dummies
         DataPage<Dummy> dummies = invoke(
-    		new GenericType<DataPage<Dummy>>() {},
-			"/dummy/get_dummies",
-			null
-		);
+                new GenericType<DataPage<Dummy>>() {
+                },
+                "/dummy/get_dummies",
+                null
+        );
         assertNotNull(dummies);
         assertEquals(2, dummies.getData().size());
 
         // Update the dummy
         dummy1.setContent("Updated Content 1");
         Dummy dummy = invoke(
-			Dummy.class,
-			"/dummy/update_dummy",
-			Parameters.fromTuples("dummy", dummy1)
-		);
+                Dummy.class,
+                "/dummy/update_dummy",
+                Parameters.fromTuples("dummy", dummy1)
+        );
 
         assertNotNull(dummy);
         assertEquals(dummy1.getId(), dummy.getId());
         assertEquals(dummy1.getKey(), dummy.getKey());
         assertEquals("Updated Content 1", dummy.getContent());
 
+        dummy1 = dummy;
+
+        // Get the dummy by id
+        dummy = invoke(
+                Dummy.class,
+                "/dummy/get_dummy_by_id",
+                Parameters.fromTuples("dummy_id", dummy1.getId())
+        );
+
+        assertNotNull(dummy);
+        assertEquals(dummy.getId(), dummy1.getId());
+        assertEquals(dummy.getKey(), dummy1.getKey());
+
         // Delete the dummy
         invoke(
-			Dummy.class,
-			"/dummy/delete_dummy",
-			Parameters.fromTuples("dummy_id", dummy1.getId())
-		);
+                Dummy.class,
+                "/dummy/delete_dummy",
+                Parameters.fromTuples("dummy_id", dummy1.getId())
+        );
 
         // Try to get deleted dummy
         dummy = invoke(
-			Dummy.class,
-			"/dummy/get_dummy_by_id",
-			Parameters.fromTuples("dummy_id", dummy1.getId())
-		);
+                Dummy.class,
+                "/dummy/get_dummy_by_id",
+                Parameters.fromTuples("dummy_id", dummy1.getId())
+        );
         assertNull(dummy);
-	}
+    }
 
-	private static Response performInvoke(String route, Object entity) throws Exception {
-		ClientConfig clientConfig = new ClientConfig();
-		clientConfig.register(new JacksonFeature());
-		Client httpClient = ClientBuilder.newClient(clientConfig);
+    @Test
+    public void testFailedValidation() {
+        // Create one dummy with an invalid id
+        var err = invoke(
+                ErrorDescription.class,
+                "/dummy/create_dummy",
+                Parameters.fromTuples()
+        );
 
-		Response response = httpClient.target("http://localhost:3003" + route)
-			.request(MediaType.APPLICATION_JSON)
-			.post(Entity.entity(entity, MediaType.APPLICATION_JSON));
+        assertNotNull(err);
+        assertEquals(err.getCode(), "INVALID_DATA");
+    }
 
-		return response;
-	}
+    @Test
+    public void testCheckCorrelationId() throws Exception {
+        // check transmit correllationId over params
+        String result = invoke(String.class,
+                "/dummy/check_correlation_id?correlation_id=test_cor_id",
+                null);
+        var mapRes = JsonConverter.toMap(result);
+        assertEquals("test_cor_id", mapRes.get("correlation_id"));
 
-	private static <T> T invoke(Class<T> type, String route, Object entity) throws Exception {
-		Response response = performInvoke(route, entity);
-		return response.readEntity(type);
-	}
+        var headers = new MultivaluedHashMap<String, Object>();
 
-	private static <T> T invoke(GenericType<T> type, String route, Object entity) throws Exception {
-		Response response = performInvoke(route, entity);
-		return response.readEntity(type);
-	}
-	
+        headers.add("correlation_id", "test_cor_id_header");
+        // check transmit correllationId over header
+        result = invoke(String.class,
+                "/dummy/check_correlation_id",
+                null, headers);
+        mapRes = JsonConverter.toMap(result);
+
+        assertEquals("test_cor_id_header", mapRes.get("correlation_id"));
+    }
+
+    private static Response performInvoke(String route, Object entity, MultivaluedMap<String, Object> headers) {
+        ClientConfig clientConfig = new ClientConfig();
+        clientConfig.register(new JacksonFeature());
+        Client httpClient = ClientBuilder.newClient(clientConfig);
+
+        return httpClient.target("http://localhost:3003" + route)
+                .request(MediaType.APPLICATION_JSON).headers(headers)
+                .post(Entity.entity(entity, MediaType.APPLICATION_JSON));
+    }
+
+    private static Response performInvoke(String route, Object entity) {
+        return performInvoke(route, entity, null);
+    }
+
+    private static <T> T invoke(Class<T> type, String route, Object entity) {
+        Response response = performInvoke(route, entity);
+        return response.readEntity(type);
+    }
+
+    private static <T> T invoke(Class<T> type, String route, Object entity, MultivaluedMap<String, Object> headers) {
+        Response response = performInvoke(route, entity, headers);
+        return response.readEntity(type);
+    }
+
+    private static <T> T invoke(GenericType<T> type, String route, Object entity) throws Exception {
+        Response response = performInvoke(route, entity);
+        return response.readEntity(type);
+    }
+
 }

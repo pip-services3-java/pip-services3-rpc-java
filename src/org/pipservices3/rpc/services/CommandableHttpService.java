@@ -2,9 +2,11 @@ package org.pipservices3.rpc.services;
 
 import java.util.*;
 
-import javax.ws.rs.container.*;
-import javax.ws.rs.core.*;
+import jakarta.ws.rs.container.*;
+import jakarta.ws.rs.core.*;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.process.*;
 import org.pipservices3.commons.commands.*;
 import org.pipservices3.commons.errors.*;
@@ -28,7 +30,7 @@ import org.pipservices3.commons.run.*;
  *   <li>endpoint:              override for HTTP Endpoint dependency
  *   <li>controller:            override for Controller dependency
  *   </ul>
- * <li>connection(s):           
+ * <li>connection(s):
  *   <ul>
  *   <li>discovery_key:         (optional) a key to retrieve the connection from <a href="https://pip-services3-java.github.io/pip-services3-components-java/org/pipservices3/components/connect/IDiscovery.html">IDiscovery</a>
  *   <li>protocol:              connection protocol: http or https
@@ -58,7 +60,7 @@ import org.pipservices3.commons.run.*;
  *       );
  *    }
  * }
- * 
+ *
  * MyCommandableHttpService service = new MyCommandableHttpService();
  * service.configure(ConfigParams.fromTuples(
  *     "connection.protocol", "http",
@@ -68,79 +70,78 @@ import org.pipservices3.commons.run.*;
  * service.setReferences(References.fromTuples(
  *    new Descriptor("mygroup","controller","default","default","1.0"), controller
  * ));
- * 
+ *
  * service.open("123");
  * System.out.println("The REST service is running on port 8080");
  * }
  * </pre>
+ *
  * @see RestService
  */
 public class CommandableHttpService extends RestService {
-	private ICommandable _controller;
+    private ICommandable _controller;
 
-	/**
-	 * Creates a new instance of the service.
-	 * 
-	 * @param baseRoute a service base route.
-	 */
-	public CommandableHttpService(String baseRoute) {
-		this._baseRoute = baseRoute;
-		_dependencyResolver.put("controller", "none");
-	}
+    /**
+     * Creates a new instance of the service.
+     *
+     * @param baseRoute a service base route.
+     */
+    public CommandableHttpService(String baseRoute) {
+        this._baseRoute = baseRoute;
+        _dependencyResolver.put("controller", "none");
+    }
 
-	/**
-	 * Sets references to dependent components.
-	 * 
-	 * @param references references to locate the component dependencies.
-	 * @throws ReferenceException when no found references.
-	 * @throws ConfigException    when configuration is wrong.
-	 */
-	@Override
-	public void setReferences(IReferences references) throws ReferenceException, ConfigException {
-		super.setReferences(references);
+    /**
+     * Sets references to dependent components.
+     *
+     * @param references references to locate the component dependencies.
+     * @throws ReferenceException when no found references.
+     * @throws ConfigException    when configuration is wrong.
+     */
+    @Override
+    public void setReferences(IReferences references) throws ReferenceException, ConfigException {
+        super.setReferences(references);
 
-		_controller = (ICommandable) _dependencyResolver.getOneRequired("controller");
-	}
+        _controller = (ICommandable) _dependencyResolver.getOneRequired("controller");
+    }
 
-	/**
-	 * Registers all service routes in HTTP endpoint.
-	 */
-	@Override
-	public void register() {
-		if (_controller == null)
-			return;
+    /**
+     * Registers all service routes in HTTP endpoint.
+     */
+    @Override
+    public void register() {
+        if (_controller == null)
+            return;
 
-		List<ICommand> commands = _controller.getCommandSet().getCommands();
+        List<ICommand> commands = _controller.getCommandSet().getCommands();
 
-		for (ICommand command : commands) {
-			registerRoute("post", command.getName(), new Inflector<ContainerRequestContext, Response>() {
-				@Override
-				public Response apply(ContainerRequestContext request) {
-					return executeCommand(command, request);
-				}
-			});
-		}
-	}
+        for (ICommand command : commands) {
+            registerRoute("post", command.getName(), new Inflector<ContainerRequestContext, Response>() {
+                @Override
+                public Response apply(ContainerRequestContext request) {
+                    return executeCommand(command, request);
+                }
+            });
+        }
+    }
 
-	private Response executeCommand(ICommand command, ContainerRequestContext request) {
-		try {
-			String json = getBodyAsString(request);
+    private Response executeCommand(ICommand command, ContainerRequestContext request) {
+        var correlationId = this.getCorrelationId(request);
+        InstrumentTiming timing = instrument(correlationId, _baseRoute + '.' + command.getName());
 
-			Parameters parameters = json == null ? new Parameters() : Parameters.fromJson(json);
+        try {
+            String json = getBodyAsString(request);
 
-			String correlationId = getQueryParameter(request, "correlation_id");
+            Parameters parameters = json == null ? new Parameters() : Parameters.fromJson(json);
 
-			Timing timing = instrument(correlationId, _baseRoute + '.' + command.getName());
-
-			try {
-				Object result = command.execute(correlationId, parameters);
-				return sendResult(result);
-			} finally {
-				timing.endTiming();
-			}
-		} catch (Exception ex) {
-			return sendError(ex);
-		}
-	}
+            Object result = command.execute(correlationId, parameters);
+            return sendResult(result);
+        } catch (Exception ex) {
+            timing.endFailure(ex);
+            return sendError(ex);
+        }finally {
+            timing.endTiming();
+        }
+    }
 
 }
