@@ -6,7 +6,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
-import jakarta.validation.constraints.Null;
 import jakarta.ws.rs.container.*;
 import jakarta.ws.rs.core.*;
 
@@ -100,11 +99,11 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
 
     private static final ConfigParams _defaultConfig = ConfigParams.fromTuples(
             "base_route", "",
-            "dependencies.endpoint", "*:endpoint:http:*:1.0"
-            // "dependencies.swagger", "*:swagger-service:*:*:1.0"
+            "dependencies.endpoint", "*:endpoint:http:*:1.0",
+            "dependencies.swagger", "*:swagger-service:*:*:1.0"
     );
 
-    private ConfigParams _config;
+    protected ConfigParams _config;
     private IReferences _references;
     private boolean _localEndpoint;
     private boolean _opened;
@@ -137,6 +136,10 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
 
     protected String _url;
 
+    protected ISwaggerService _swaggerService;
+    protected boolean _swaggerEnable = false;
+    protected String _swaggerRoute = "swagger";
+
     protected RestService() {
     }
 
@@ -153,6 +156,9 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
         _dependencyResolver.configure(config);
 
         _baseRoute = config.getAsStringWithDefault("base_route", _baseRoute);
+
+        this._swaggerEnable = config.getAsBooleanWithDefault("swagger.enable", this._swaggerEnable);
+        this._swaggerRoute = config.getAsStringWithDefault("swagger.route", this._swaggerRoute);
     }
 
     /**
@@ -184,6 +190,8 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
 
         // Add registration callback to the endpoint
         _endpoint.register(this);
+
+        this._swaggerService = this._dependencyResolver.getOneOptional(ISwaggerService.class, "swagger");
     }
 
     /**
@@ -195,6 +203,7 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
             _endpoint.unregister(this);
             _endpoint = null;
         }
+        this._swaggerService = null;
     }
 
     private HttpEndpoint createLocalEndpoint() throws ConfigException, ReferenceException {
@@ -439,7 +448,7 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
      *
      * @param method HTTP method: "get", "head", "post", "put", "delete"
      * @param route  a command route. Base route will be added to this route
-     * @param schema        a validation schema to validate received parameters.
+     * @param schema a validation schema to validate received parameters.
      * @param action an action function that is called when operation is invoked.
      */
     protected void registerRoute(String method, String route, Schema schema, Inflector<ContainerRequestContext, Response> action) {
@@ -476,6 +485,28 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
         route = this.appendBaseRoute(route);
 
         this._endpoint.registerInterceptor(route, action);
+    }
+
+    protected void registerOpenApiSpecFromFile(String path) {
+        try (var fs = new FileInputStream(path)) {
+            var content = new String(fs.readAllBytes(), StandardCharsets.UTF_8);
+            this.registerOpenApiSpec(content);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    protected void registerOpenApiSpec(String content) {
+        if (!this._swaggerEnable) return;
+
+        this.registerRoute("get", this._swaggerRoute, null, (req) -> Response.status(200)
+                .entity(content)
+                .header("Content-Length", content.length())
+                .header("Content-Type", "application/x-yaml")
+                .build());
+
+        if (this._swaggerService != null)
+            this._swaggerService.registerOpenApiSpec(this._baseRoute, this._swaggerRoute);
     }
 
     /**

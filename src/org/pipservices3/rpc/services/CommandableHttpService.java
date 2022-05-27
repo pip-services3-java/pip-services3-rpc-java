@@ -1,17 +1,12 @@
 package org.pipservices3.rpc.services;
 
-import java.util.*;
-
-import jakarta.ws.rs.container.*;
-import jakarta.ws.rs.core.*;
-
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.process.*;
 import org.pipservices3.commons.commands.*;
+import org.pipservices3.commons.config.ConfigParams;
 import org.pipservices3.commons.errors.*;
 import org.pipservices3.commons.refer.*;
-import org.pipservices3.components.count.*;
 import org.pipservices3.commons.run.*;
 
 /**
@@ -80,6 +75,8 @@ import org.pipservices3.commons.run.*;
  */
 public class CommandableHttpService extends RestService {
     private ICommandable _controller;
+    protected CommandSet _commandSet;
+    protected boolean _swaggerAuto = true;
 
     /**
      * Creates a new instance of the service.
@@ -106,6 +103,17 @@ public class CommandableHttpService extends RestService {
     }
 
     /**
+     * Configures component by passing configuration parameters.
+     *
+     * @param config configuration parameters to be set.
+     */
+    public void configure(ConfigParams config) throws ConfigException {
+        super.configure(config);
+
+        this._swaggerAuto = config.getAsBooleanWithDefault("swagger.auto", this._swaggerAuto);
+    }
+
+    /**
      * Registers all service routes in HTTP endpoint.
      */
     @Override
@@ -113,7 +121,8 @@ public class CommandableHttpService extends RestService {
         if (_controller == null)
             return;
 
-        List<ICommand> commands = _controller.getCommandSet().getCommands();
+        _commandSet = _controller.getCommandSet();
+        var commands = _commandSet.getCommands();
 
         for (ICommand command : commands) {
             registerRoute("post", command.getName(), new Inflector<ContainerRequestContext, Response>() {
@@ -122,6 +131,12 @@ public class CommandableHttpService extends RestService {
                     return executeCommand(command, request);
                 }
             });
+        }
+
+        if (this._swaggerAuto) {
+            var swaggerConfig = this._config.getSection("swagger");
+            var doc = new CommandableSwaggerDocument(this._baseRoute, swaggerConfig, commands);
+            this.registerOpenApiSpec(doc.toString());
         }
     }
 
@@ -139,7 +154,7 @@ public class CommandableHttpService extends RestService {
         } catch (Exception ex) {
             timing.endFailure(ex);
             return sendError(ex);
-        }finally {
+        } finally {
             timing.endTiming();
         }
     }

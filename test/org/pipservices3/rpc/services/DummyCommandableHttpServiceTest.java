@@ -12,6 +12,7 @@ import org.glassfish.jersey.jackson.*;
 import org.pipservices3.commons.config.*;
 import org.pipservices3.commons.convert.JsonConverter;
 import org.pipservices3.commons.data.*;
+import org.pipservices3.commons.errors.ApplicationException;
 import org.pipservices3.commons.errors.ErrorDescription;
 import org.pipservices3.commons.refer.*;
 import org.pipservices3.commons.run.*;
@@ -19,7 +20,6 @@ import org.pipservices3.components.log.ConsoleLogger;
 import org.pipservices3.rpc.*;
 
 import java.util.List;
-import java.util.Map;
 
 public class DummyCommandableHttpServiceTest {
     private final Dummy DUMMY1 = new Dummy(null, "Key 1", "Content 1",
@@ -27,10 +27,11 @@ public class DummyCommandableHttpServiceTest {
     private final Dummy DUMMY2 = new Dummy(null, "Key 2", "Content 2",
             List.of(new SubDummy("SubKey 2", "SubContent 2")));
 
-    private static final ConfigParams RestConfig = ConfigParams.fromTuples(
+    private static final ConfigParams restConfig = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3003
+            "connection.port", 3000,
+            "swagger.enable", "true"
     );
 
     private DummyController _ctrl;
@@ -41,7 +42,7 @@ public class DummyCommandableHttpServiceTest {
         _ctrl = new DummyController();
         _service = new DummyCommandableHttpService();
 
-        _service.configure(RestConfig);
+        _service.configure(restConfig);
 
         References references = References.fromTuples(
                 new Descriptor("pip-services-dummies", "controller", "default", "default", "1.0"), _ctrl,
@@ -169,6 +170,57 @@ public class DummyCommandableHttpServiceTest {
         mapRes = JsonConverter.toMap(result);
 
         assertEquals("test_cor_id_header", mapRes.get("correlation_id"));
+    }
+
+    @Test
+    public void testGetOpenApiSpec() {
+        ClientConfig clientConfig = new ClientConfig();
+        clientConfig.register(new JacksonFeature());
+        Client httpClient = ClientBuilder.newClient(clientConfig);
+
+        var url = "http://localhost:3000";
+        var response = httpClient.target(url + "/dummy/swagger")
+                .request(MediaType.APPLICATION_JSON).get();
+        var res = response.readEntity(String.class);
+        assertTrue(res.startsWith("openapi"));
+    }
+
+    @Test
+    public void testOpenApiSpecOverride() throws ApplicationException {
+        var openApiContent = "swagger yaml content";
+
+        ClientConfig clientConfig = new ClientConfig();
+        clientConfig.register(new JacksonFeature());
+        Client httpClient = ClientBuilder.newClient(clientConfig);
+
+        var url = "http://localhost:3000";
+
+        // recreate service with new configuration
+        _service.close(null);
+
+        var config = restConfig.setDefaults(ConfigParams.fromTuples("swagger.auto", false));
+
+        var ctrl = new DummyController();
+
+        _service = new DummyCommandableHttpService();
+        _service.configure(config);
+
+        var references = References.fromTuples(
+                new Descriptor("pip-services-dummies", "controller", "default", "default", "1.0"), ctrl,
+                new Descriptor("pip-services-dummies", "service", "http", "default", "1.0"), _service
+        );
+
+        _service.setReferences(references);
+
+        _service.open(null);
+
+        var response = httpClient.target(url + "/dummy/swagger")
+                .request(MediaType.APPLICATION_JSON).get();
+        var res = response.readEntity(String.class);
+
+        assertEquals(openApiContent, res);
+
+        _service.close(null);
     }
 
     private static Response performInvoke(String route, Object entity, MultivaluedMap<String, Object> headers) {

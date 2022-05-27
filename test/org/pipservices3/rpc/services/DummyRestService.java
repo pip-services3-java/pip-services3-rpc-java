@@ -2,8 +2,6 @@ package org.pipservices3.rpc.services;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.Provider;
-import org.glassfish.jersey.process.Inflector;
 import org.pipservices3.commons.config.ConfigParams;
 import org.pipservices3.commons.convert.JsonConverter;
 import org.pipservices3.commons.convert.TypeCode;
@@ -16,7 +14,6 @@ import org.pipservices3.commons.refer.IReferences;
 import org.pipservices3.commons.refer.ReferenceException;
 import org.pipservices3.commons.validate.FilterParamsSchema;
 import org.pipservices3.commons.validate.ObjectSchema;
-import org.pipservices3.commons.validate.ValidationException;
 import org.pipservices3.rpc.Dummy;
 import org.pipservices3.rpc.DummySchema;
 import org.pipservices3.rpc.IDummyController;
@@ -185,13 +182,11 @@ public class DummyRestService extends RestService {
                 this::raiseException
         );
 
-//        if (this._swaggerContent) {
-//            this.registerOpenApiSpec(this._swaggerContent);
-//        }
-//
-//        if (this._swaggerPath) {
-//            this.registerOpenApiSpecFromFile(this._swaggerPath);
-//        }
+        if (this._swaggerContent != null)
+            this.registerOpenApiSpec(this._swaggerContent);
+
+        if (this._swaggerPath != null)
+            this.registerOpenApiSpecFromFile(this._swaggerPath);
     }
 
 

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import org.pipservices3.commons.config.ConfigParams;
 import org.pipservices3.commons.convert.JsonConverter;
 import org.pipservices3.commons.data.DataPage;
+import org.pipservices3.commons.data.IdGenerator;
 import org.pipservices3.commons.errors.ApplicationException;
 import org.pipservices3.commons.errors.ConfigException;
 import org.pipservices3.commons.errors.ErrorDescription;
@@ -28,6 +29,11 @@ import org.pipservices3.rpc.Dummy;
 import org.pipservices3.rpc.DummyController;
 import org.pipservices3.rpc.SubDummy;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class DummyRestServiceTest {
@@ -74,7 +80,6 @@ public class DummyRestServiceTest {
 
     @AfterClass
     public static void teardown() throws ApplicationException {
-        assertEquals(service.getNumberOfCalls(), 5);
         service.close(null);
     }
 
@@ -121,6 +126,8 @@ public class DummyRestServiceTest {
         dummy = invoke(Dummy.class, HttpMethod.GET, "/dummies/" + dummy1.getId(), null);
 
         assertNull(dummy);
+
+        assertEquals(service.getNumberOfCalls(), 4);
     }
 
     @Test
@@ -145,7 +152,56 @@ public class DummyRestServiceTest {
 
         mapRes = JsonConverter.toMap(result);
         assertEquals("test_cor_id_header", mapRes.get("correlation_id"));
+    }
 
+    @Test
+    public void testGetOpenApiSpecFromString() {
+        var result = invoke(String.class, HttpMethod.GET, "/swagger", null);
+
+        var openApiContent = restConfig.getAsString("swagger.content");
+        assertEquals(openApiContent, result);
+    }
+
+    @Test
+    public void testGetOpenApiSpecFromFile() throws ApplicationException {
+        var openApiContent = "swagger yaml content from file";
+        var filename = "dummy_" + IdGenerator.nextLong() + ".tmp";
+
+        // create temp file
+        try (var fs = new FileOutputStream(filename)) {
+            fs.write(openApiContent.getBytes(StandardCharsets.UTF_8));
+
+            // recreate service with new configuration
+            service.close(null);
+
+            var serviceConfig = ConfigParams.fromTuples(
+                    "connection.protocol", "http",
+                    "connection.host", "localhost",
+                    "connection.port", 3000,
+                    "swagger.enable", "true",
+                    "swagger.path", filename  // for test only
+            );
+
+            var ctrl = new DummyController();
+            service = new DummyRestService();
+            service.configure(serviceConfig);
+
+            var references = References.fromTuples(
+                    new Descriptor("pip-services-dummies", "controller", "default", "default", "1.0"), ctrl,
+                    new Descriptor("pip-services-dummies", "service", "rest", "default", "1.0"), service
+            );
+            service.setReferences(references);
+
+            service.open(null);
+
+            var content = invoke(String.class, HttpMethod.GET,"/swagger", null);
+            assertEquals(openApiContent, content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // delete temp file
+            assertTrue(new File(filename).delete());
+        }
     }
 
     private <T> T invoke(Class<T> type, String method, String route, Object entity) {

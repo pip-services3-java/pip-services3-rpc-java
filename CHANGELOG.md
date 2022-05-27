@@ -3,6 +3,7 @@
 ## <a name="3.1.0"></a> 3.1.0 (2022-05-26)
 
 ### Features
+* Added swagger support
 * Added **test** module
 * Added new configurations for clients and services
 * Added interceptors
