@@ -1,0 +1,64 @@
+name: Pip.Services RPC toolkit in Java
+
+on: 
+  push:
+    paths:
+    - '**'
+    - '!README.md'
+
+jobs:
+  Default:
+    runs-on: ubuntu-16.04
+    if: "!contains(github.event.head_commit.message, '[skip-ci]')"
+    steps:
+    - uses: actions/checkout@main
+  
+    ############# Prepare #############
+
+    - name: Install prereq and save build number
+      id: build_info
+      uses: pip-devops/actions/java/prepare@v1
+
+    ############# Build #############
+
+    - name: Build the component
+      uses: pip-devops/actions/java/build@v1
+
+    ############# Test #############
+
+    - name: Test the component
+      uses: pip-devops/actions/java/test@v1
+
+    ############# Tag #############
+
+    - name: Delete existing tag
+      uses: dev-drprasad/delete-tag-and-release@v0.1.2
+      with:
+        delete_release: true
+        tag_name: "v${{ steps.build_info.outputs.component_version }}-${{ steps.build_info.outputs.build_number }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Tag branch with the build number
+      uses: tvdias/github-tagger@v0.0.1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        tag: "v${{ steps.build_info.outputs.component_version }}-${{ steps.build_info.outputs.build_number }}"
+
+    ############# Release #############
+
+    # - name: Release binary artifacts
+    #   uses: pip-devops/actions/java/release@v1
+    #   with:
+    #     m2-user: ${{ secrets.M2_USER }}
+    #     m2-pass: ${{ secrets.M2_PASS }}
+    #     gpg-username: ${{ secrets.GPG_USERNAME }}
+    #     gpg-email: ${{ secrets.GPG_EMAIL }}
+    #     gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+    ############# Clear #############
+
+    - name: Clean up
+      if: ${{ always() }}
+      uses: pip-devops/actions/java/clear@v1
+    
