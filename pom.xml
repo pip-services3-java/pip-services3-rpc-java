@@ -117,6 +117,9 @@
                 <configuration>
                     <reportOutputDirectory>${basedir}/docs</reportOutputDirectory>
                     <destDir>.</destDir>
+                    <additionalOptions>
+                        <additionalOption>-Xdoclint:none</additionalOption>
+                    </additionalOptions>
                     <!--
                                   <quiet>true</quiet>
                                   <nonavbar>true</nonavbar>
