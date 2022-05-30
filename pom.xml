@@ -157,26 +157,26 @@
                 <version>2.7</version>
             </plugin>
             <!--            Dependency conflicts check-->
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <dependencyConvergence/>
-                                <!--                                <requiredMavenVersion>-->
-                                <!--                                    <version>{$maven.minimal.version}</version>-->
-                                <!--                                </requiredMavenVersion>-->
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-enforcer-plugin</artifactId>-->
+<!--                <version>3.0.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>enforce-maven</id>-->
+<!--                        <goals>-->
+<!--                            <goal>enforce</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <rules>-->
+<!--                                <dependencyConvergence/>-->
+<!--                                &lt;!&ndash;                                <requiredMavenVersion>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                    <version>{$maven.minimal.version}</version>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                </requiredMavenVersion>&ndash;&gt;-->
+<!--                            </rules>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
@@ -211,8 +211,6 @@
             <groupId>org.pipservices</groupId>
             <artifactId>pip-services3-components</artifactId>
             <version>[${minimal.pipversion},4.0.0-!)</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/pip-services3-components-3.1.0-jar-with-dependencies.jar</systemPath>
         </dependency>
         <!--
             <dependency>
@@ -241,6 +239,11 @@
                 <version>3.4</version>
             </dependency>
         -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>3.0.2</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

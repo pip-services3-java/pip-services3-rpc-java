@@ -228,7 +228,7 @@ public class DummyCommandableHttpServiceTest {
         clientConfig.register(new JacksonFeature());
         Client httpClient = ClientBuilder.newClient(clientConfig);
 
-        return httpClient.target("http://localhost:3003" + route)
+        return httpClient.target("http://localhost:3000" + route)
                 .request(MediaType.APPLICATION_JSON).headers(headers)
                 .post(Entity.entity(entity, MediaType.APPLICATION_JSON));
     }
