@@ -11,30 +11,49 @@ if ($component.version -ne $version) {
     throw "Versions in component.json and pom.xml do not match"
 }
 
+# Verify release existence on nexus repository
+$mvnPackageUrl = "https://oss.sonatype.org/service/local/repositories/releases/content/org/pipservices/$($component.name)/$($component.version)/$($component.name)-$($component.version).jar"
+try {
+   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+   $mvnResponceStatusCode = $(Invoke-WebRequest -Uri $mvnPackageUrl).StatusCode
+} catch {
+   $mvnResponceStatusCode = $_.Exception.Response.StatusCode.value__
+}
+
+if ($mvnResponceStatusCode -eq 200) {
+    Write-Host "Package $($component.name):$($component.version) already exists on maven repository. Release skipped."
+    exit 0
+} elseif ($mvnResponceStatusCode -eq 404) {
+   Write-Host "Releasing $($component.name)/$($component.version)..."
+}
+
+# Use existing gpg key if env variables set 
+if (($env:GPG_PUBLIC_KEY -ne $null) -and ($env:GPG_PRIVATE_KEY -ne $null)) {
+   Set-Content -Path "gpg_public.key" -Value $env:GPG_PUBLIC_KEY
+   Set-Content -Path "gpg_private.key" -Value $env:GPG_PRIVATE_KEY
+
+   Write-Host "Before import"
+   gpg --list-keys
+   gpg --import "gpg_public.key"
+   gpg --batch --passphrase "$($env:GPG_PASSPHRASE)" --import "gpg_private.key"
+   Write-Host "After import"
+   gpg --list-keys
+   $env:GPG_TTY=$(tty)
+
+   # Remove m2 config for clean run
+   if (Test-Path "~/.m2/settings.xml") {
+      Remove-Item -Path "~/.m2/settings.xml" -Force
+   }
+} 
+
 # Create ~/.m2/settings.xml if not exists
-if (!(Test-Path "~/.m2/settings.xml")) {
-   # Generate new gpg key
-   $genKey = @"
-Key-Type: 1
-Key-Length: 2048
-Subkey-Type: 1
-Subkey-Length: 2048
-Name-Real: $($env:GPG_USERNAME)
-Name-Email: $($env:GPG_EMAIL)
-Passphrase: $($env:GPG_PASSPHRASE)
-Expire-Date: 0
-"@
-
-   Set-Content -Path "genKey" -Value $genKey
-   
-   $gpgOut = gpg --batch --gen-key genKey
-
-   # Get gpg keyname
-   $gpgKeyname = Read-Host "Enter gpg key id, you should see it above (gpg: key YOUR_KEY_ID marked as ultimately trusted)"
-
-    $m2SetingsContent = @"
+if (-not (Test-Path "~/.m2/settings.xml")) {
+   # Create m2 config
+   $m2SetingsContent = @"
 <?xml version="1.0" encoding="UTF-8"?>
-<settings>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
    <servers>
       <server>
          <id>ossrh</id>
@@ -59,7 +78,7 @@ Expire-Date: 0
             <activeByDefault>true</activeByDefault>
          </activation>
          <properties>
-            <gpg.keyname>$gpgKeyname</gpg.keyname>
+            <gpg.keyname>$($env:GPG_KEYNAME)</gpg.keyname>
             <gpg.executable>gpg</gpg.executable>
             <gpg.passphrase>$($env:GPG_PASSPHRASE)</gpg.passphrase>
          </properties>
@@ -68,28 +87,18 @@ Expire-Date: 0
 </settings>
 "@
 
-    if (!(Test-Path "~/.m2")) {
-        $null = New-Item -Path "~/.m2" -ItemType "directory"
-    }
-
-    Set-Content -Path "~/.m2/settings.xml" -Value $m2SetingsContent
+   # Save config
+   if (-not (Test-Path "~/.m2")) {
+      $null = New-Item -Path "~/.m2" -ItemType "directory"
+   }
+   Set-Content -Path "~/.m2/settings.xml" -Value $m2SetingsContent
+   Write-Host "'~/.m2/settings.xml' created"
 }
 
-# Make sure that:
-# 1. GPG has been installed, key was generated and uploaded to a key server;
-# 2. Maven has been installed (use v3.3.9 instead of v3.5.4 - otherwise upload will be VERY slow [https://issues.sonatype.org/browse/OSSRH-43371]);
-# 3. Maven's global settings file (~/.m2/settings.xml) contains all necessary credentials and your key
-# 4. ~/.gnupg contains 2 files, each of which contain the lines in double quotation marks:
-#   4a. ~/.gnupg/gpg-agent.conf
-#   "allow-loopback-pinentry"
-#   4b. ~/.gnupg/gpg.conf
-#   "pinentry-mode loopback"
-# 
-
-# Release package
+# Deploy release to staging repository
 mvn clean deploy
 
-# Verify release result
+# Verify mvn deploy result
 if ($LastExitCode -ne 0) {
-    Write-Error "Release failed. Watch logs above. If you run script from local machine - try to remove ~/.m2/settings.xml and rerun a script."
+    Write-Error "Release failed. Watch logs above and check environment variables. If you run script from local machine - try to remove ~/.m2/settings.xml and rerun a script."
 }
