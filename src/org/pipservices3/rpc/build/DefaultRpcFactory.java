@@ -1,8 +1,10 @@
 package org.pipservices3.rpc.build;
 
-import org.pipservices3.components.build.*;
-import org.pipservices3.rpc.services.*;
-import org.pipservices3.commons.refer.*;
+import org.pipservices3.commons.refer.Descriptor;
+import org.pipservices3.components.build.Factory;
+import org.pipservices3.rpc.services.HeartbeatRestService;
+import org.pipservices3.rpc.services.HttpEndpoint;
+import org.pipservices3.rpc.services.StatusRestService;
 
 /**
  * Creates RPC components by their descriptors.

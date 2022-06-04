@@ -1,7 +1,6 @@
 package org.pipservices3.rpc.services;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import org.pipservices3.commons.config.ConfigParams;
 import org.pipservices3.commons.config.IConfigurable;
@@ -12,7 +11,6 @@ import org.pipservices3.commons.refer.DependencyResolver;
 import org.pipservices3.commons.refer.IReferenceable;
 import org.pipservices3.commons.refer.IReferences;
 import org.pipservices3.commons.refer.ReferenceException;
-import org.pipservices3.commons.reflect.MethodReflector;
 import org.pipservices3.components.count.CompositeCounters;
 import org.pipservices3.components.log.CompositeLogger;
 
@@ -22,7 +20,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public abstract class RestOperations implements IConfigurable, IReferenceable {
     protected CompositeLogger _logger = new CompositeLogger();

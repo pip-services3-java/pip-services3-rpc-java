@@ -25,7 +25,13 @@ public class Dummy implements IStringIdentifiable {
 	@JsonProperty("id")
 	public String getId() { return _id; }
 	public void setId(String value) { _id = value; }
-	
+
+	@Override
+	public String withGeneratedId() {
+		_id = IdGenerator.nextLong();
+		return _id;
+	}
+
 	@JsonProperty("key")
 	public String getKey() { return _key; }
 	public void setKey(String value) { _key = value; }

@@ -1,9 +1,8 @@
 package org.pipservices3.rpc.clients;
 
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.*;
-
-import org.pipservices3.commons.errors.*;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.GenericType;
+import org.pipservices3.commons.errors.ApplicationException;
 
 /**
  * Abstract client that calls commandable HTTP service.

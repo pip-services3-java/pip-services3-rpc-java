@@ -1,10 +1,11 @@
 package org.pipservices3.rpc.services;
 
-import java.util.*;
-
 import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
-import org.pipservices3.commons.convert.*;
-import org.pipservices3.commons.data.*;
+import org.pipservices3.commons.convert.StringConverter;
+import org.pipservices3.commons.data.FilterParams;
+import org.pipservices3.commons.data.PagingParams;
+
+import java.util.Map;
 
 //import com.sun.jersey.core.util.*;
 

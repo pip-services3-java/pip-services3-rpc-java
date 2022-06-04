@@ -1,22 +1,21 @@
 package org.pipservices3.rpc.connect;
 
+import org.pipservices3.commons.config.ConfigParams;
+import org.pipservices3.commons.config.IConfigurable;
+import org.pipservices3.commons.errors.ApplicationException;
+import org.pipservices3.commons.errors.ConfigException;
+import org.pipservices3.commons.refer.IReferenceable;
+import org.pipservices3.commons.refer.IReferences;
+import org.pipservices3.components.auth.CredentialParams;
+import org.pipservices3.components.auth.CredentialResolver;
+import org.pipservices3.components.connect.ConnectionParams;
+import org.pipservices3.components.connect.ConnectionResolver;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import jakarta.ws.rs.core.UriBuilder;
-import org.pipservices3.commons.config.ConfigParams;
-import org.pipservices3.commons.config.IConfigurable;
-import org.pipservices3.components.auth.CredentialParams;
-import org.pipservices3.components.auth.CredentialResolver;
-import org.pipservices3.components.connect.ConnectionParams;
-import org.pipservices3.components.connect.ConnectionResolver;
-import org.pipservices3.commons.errors.ApplicationException;
-import org.pipservices3.commons.errors.ConfigException;
-import org.pipservices3.commons.refer.IReferenceable;
-import org.pipservices3.commons.refer.IReferences;
 
 /**
  * Helper class to retrieve connections for HTTP-based services abd clients.

@@ -1,6 +1,5 @@
 package org.pipservices3.rpc.test;
 
-import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.GenericType;
 import org.pipservices3.commons.errors.ApplicationException;
 import org.pipservices3.rpc.clients.CommandableHttpClient;

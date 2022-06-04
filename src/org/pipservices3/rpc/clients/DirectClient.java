@@ -1,11 +1,16 @@
 package org.pipservices3.rpc.clients;
 
-import org.pipservices3.commons.config.*;
-import org.pipservices3.components.count.*;
-import org.pipservices3.commons.errors.*;
-import org.pipservices3.components.log.*;
-import org.pipservices3.commons.refer.*;
-import org.pipservices3.commons.run.*;
+import org.pipservices3.commons.config.ConfigParams;
+import org.pipservices3.commons.config.IConfigurable;
+import org.pipservices3.commons.errors.ConfigException;
+import org.pipservices3.commons.errors.ConnectionException;
+import org.pipservices3.commons.refer.DependencyResolver;
+import org.pipservices3.commons.refer.IReferenceable;
+import org.pipservices3.commons.refer.IReferences;
+import org.pipservices3.commons.refer.ReferenceException;
+import org.pipservices3.commons.run.IOpenable;
+import org.pipservices3.components.count.CompositeCounters;
+import org.pipservices3.components.log.CompositeLogger;
 import org.pipservices3.components.trace.CompositeTracer;
 import org.pipservices3.rpc.services.InstrumentTiming;
 

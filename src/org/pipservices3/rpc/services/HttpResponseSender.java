@@ -1,8 +1,10 @@
 package org.pipservices3.rpc.services;
 
-import jakarta.ws.rs.core.*;
-
-import org.pipservices3.commons.errors.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.pipservices3.commons.errors.ApplicationException;
+import org.pipservices3.commons.errors.ErrorDescription;
+import org.pipservices3.commons.errors.ErrorDescriptionFactory;
 
 /**
  * Helper class that handles HTTP-based responses.
@@ -29,8 +31,7 @@ public class HttpResponseSender {
 		}
 
 		try {
-			if (ex instanceof ApplicationException) {
-				ApplicationException ex3 = (ApplicationException) ex;
+			if (ex instanceof ApplicationException ex3) {
 				ErrorDescription errorDesc3 = ErrorDescriptionFactory.create(ex3);
 				return Response.status(ex3.getStatus()).type(MediaType.APPLICATION_JSON).entity(errorDesc3).build();
 			} else {

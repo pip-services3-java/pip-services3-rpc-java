@@ -4,7 +4,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -127,7 +126,6 @@ public class HttpRequestDetector {
 
         // Remove port
         if (ip != null) {
-            ip = ip.toString();
             var index = ip.indexOf(':');
             if (index > 0) {
                 ip = ip.substring(0, index);

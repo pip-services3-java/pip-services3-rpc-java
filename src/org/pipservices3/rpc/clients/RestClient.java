@@ -1,29 +1,34 @@
 package org.pipservices3.rpc.clients;
 
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.time.temporal.ChronoUnit;
-
-import jakarta.ws.rs.HttpMethod;
-import jakarta.ws.rs.client.*;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.*;
-
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.RetryPolicy;
-import org.glassfish.jersey.client.*;
-import org.glassfish.jersey.jackson.*;
-
-import org.pipservices3.commons.config.*;
-import org.pipservices3.components.count.*;
-import org.pipservices3.commons.data.*;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.pipservices3.commons.config.ConfigParams;
+import org.pipservices3.commons.config.IConfigurable;
+import org.pipservices3.commons.data.FilterParams;
+import org.pipservices3.commons.data.PagingParams;
 import org.pipservices3.commons.errors.*;
-import org.pipservices3.components.log.*;
+import org.pipservices3.commons.refer.IReferenceable;
+import org.pipservices3.commons.refer.IReferences;
+import org.pipservices3.commons.refer.ReferenceException;
+import org.pipservices3.commons.run.IOpenable;
+import org.pipservices3.components.connect.ConnectionParams;
+import org.pipservices3.components.count.CompositeCounters;
+import org.pipservices3.components.log.CompositeLogger;
 import org.pipservices3.components.trace.CompositeTracer;
-import org.pipservices3.rpc.connect.*;
-import org.pipservices3.commons.refer.*;
-import org.pipservices3.commons.run.*;
-import org.pipservices3.components.connect.*;
+import org.pipservices3.rpc.connect.HttpConnectionResolver;
 import org.pipservices3.rpc.services.InstrumentTiming;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Abstract client that calls remove endpoints using HTTP/REST protocol.
@@ -279,9 +284,10 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
 
         _client.close();
         _client = null;
-        _url = null;
 
         _logger.debug(correlationId, "Disconnected from %s", _url);
+
+        _url = null;
     }
 
     private URI createRequestUri(String route) {

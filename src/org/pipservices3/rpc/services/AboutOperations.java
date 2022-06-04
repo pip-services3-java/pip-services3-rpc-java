@@ -52,9 +52,9 @@ public class AboutOperations extends RestOperations {
         var about = Map.of(
                 "server", Map.of(
                         "name", this._contextInfo != null ? this._contextInfo.getName() : "unknown",
-                        "description", this._contextInfo != null ? this._contextInfo.getDescription() : null,
-                        "properties", this._contextInfo != null ? this._contextInfo.getProperties() : null,
-                        "uptime", this._contextInfo != null ? this._contextInfo.getUptime() : null,
+                        "description", this._contextInfo != null ? this._contextInfo.getDescription() : "null",
+                        "properties", this._contextInfo != null ? this._contextInfo.getProperties() : "null",
+                        "uptime", this._contextInfo != null ? this._contextInfo.getUptime() : "null",
 
                         "current_time", ZonedDateTime.now().toOffsetDateTime().toString(),
                         "protocol", req.getUriInfo().getBaseUri().getScheme(),

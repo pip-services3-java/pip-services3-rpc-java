@@ -1,6 +1,39 @@
 package org.pipservices3.rpc.services;
 
-import java.io.*;
+import com.sun.net.httpserver.HttpServer;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.ext.Provider;
+import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
+import org.glassfish.jersey.process.Inflector;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.model.Resource;
+import org.pipservices3.commons.config.ConfigParams;
+import org.pipservices3.commons.config.IConfigurable;
+import org.pipservices3.commons.convert.JsonConverter;
+import org.pipservices3.commons.errors.ApplicationException;
+import org.pipservices3.commons.errors.ConfigException;
+import org.pipservices3.commons.errors.ConnectionException;
+import org.pipservices3.commons.refer.DependencyResolver;
+import org.pipservices3.commons.refer.IReferenceable;
+import org.pipservices3.commons.refer.IReferences;
+import org.pipservices3.commons.refer.ReferenceException;
+import org.pipservices3.commons.run.IOpenable;
+import org.pipservices3.commons.validate.Schema;
+import org.pipservices3.commons.validate.ValidationException;
+import org.pipservices3.components.connect.ConnectionParams;
+import org.pipservices3.components.count.CompositeCounters;
+import org.pipservices3.components.count.CounterTiming;
+import org.pipservices3.components.log.CompositeLogger;
+import org.pipservices3.rpc.connect.HttpConnectionResolver;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -14,32 +47,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
-
-import jakarta.ws.rs.ext.Provider;
-import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
-import org.glassfish.jersey.process.Inflector;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.model.Resource;
-import org.pipservices3.commons.config.*;
-import org.pipservices3.commons.convert.JsonConverter;
-import org.pipservices3.commons.validate.Schema;
-import org.pipservices3.commons.validate.ValidationException;
-import org.pipservices3.components.connect.ConnectionParams;
-import org.pipservices3.components.count.*;
-import org.pipservices3.commons.errors.*;
-import org.pipservices3.components.log.CompositeLogger;
-import org.pipservices3.rpc.connect.HttpConnectionResolver;
-import org.pipservices3.commons.refer.*;
-import org.pipservices3.commons.run.IOpenable;
-
-import com.sun.net.httpserver.HttpServer;
-
-import javax.net.ssl.*;
 
 /**
  * Used for creating HTTP endpoints. An endpoint is a URL, at which a given service can be accessed by a client.
@@ -118,7 +125,7 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
     private String _url;
     private HttpServer _server;
     private ResourceConfig _resources;
-    private final List<IRegisterable> _registrations = new ArrayList<IRegisterable>();
+    private final List<IRegisterable> _registrations = new ArrayList<>();
 
     private boolean _protocolUpgradeEnabled = false;
     private boolean _maintenanceEnabled = false;
@@ -530,12 +537,12 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 
         pathParams.forEach((k, v) -> {
             if (k != null)
-                params.put(k, v.stream().findFirst().orElseGet(null));
+                params.put(k, v.stream().findFirst().isPresent() ? v.stream().findFirst() : null);
         });
 
         queryParams.forEach((k, v) -> {
             if (k != null)
-                params.put(k, v.stream().findFirst().orElseGet(null));
+                params.put(k, v.stream().findFirst().isPresent() ? v.stream().findFirst().get() : null);
         });
 
         return params;

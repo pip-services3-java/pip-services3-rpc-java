@@ -2,12 +2,15 @@ package org.pipservices3.rpc.services;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.process.*;
-import org.pipservices3.commons.commands.*;
+import org.glassfish.jersey.process.Inflector;
+import org.pipservices3.commons.commands.CommandSet;
+import org.pipservices3.commons.commands.ICommand;
+import org.pipservices3.commons.commands.ICommandable;
 import org.pipservices3.commons.config.ConfigParams;
-import org.pipservices3.commons.errors.*;
-import org.pipservices3.commons.refer.*;
-import org.pipservices3.commons.run.*;
+import org.pipservices3.commons.errors.ConfigException;
+import org.pipservices3.commons.refer.IReferences;
+import org.pipservices3.commons.refer.ReferenceException;
+import org.pipservices3.commons.run.Parameters;
 
 /**
  * Abstract service that receives remove calls via HTTP/REST protocol
