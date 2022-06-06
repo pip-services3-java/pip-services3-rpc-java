@@ -19,7 +19,7 @@ jobs:
       id: build_info
       uses: pip-devops/actions/java/prepare@v1
       with:
-        java-version: 15.0.1
+        java-version: 18.0.1.1
 
     ############# Build #############
 
