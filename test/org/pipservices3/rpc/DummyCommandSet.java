@@ -8,8 +8,9 @@ import org.pipservices3.commons.data.PagingParams;
 import org.pipservices3.commons.run.Parameters;
 import org.pipservices3.commons.validate.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class DummyCommandSet extends CommandSet {
@@ -139,9 +140,18 @@ public class DummyCommandSet extends CommandSet {
         String id = map.getAsNullableString("id");
         String key = map.getAsNullableString("key");
         String content = map.getAsNullableString("content");
-        var array = map.getAsArrayWithDefault("array", new AnyValueArray());
+        var arrayObj = map.getAsNullableArray("array");
 
-        return new Dummy(id, key, content, new ArrayList<>());
+        var arrayList = new ArrayList<SubDummy>();
+        if (arrayObj != null) {
+            for (var item : arrayObj) {
+                final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper
+                final SubDummy subDummy = mapper.convertValue(item, SubDummy.class);
+                arrayList.add(subDummy);
+            }
+        }
+
+        return new Dummy(id, key, content, arrayList);
     }
 
 //	private static Dummy extractDummy(Parameters args) {

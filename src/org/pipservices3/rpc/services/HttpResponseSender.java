@@ -31,7 +31,8 @@ public class HttpResponseSender {
 		}
 
 		try {
-			if (ex instanceof ApplicationException ex3) {
+			if (ex instanceof ApplicationException) {
+				ApplicationException ex3 = (ApplicationException) ex;
 				ErrorDescription errorDesc3 = ErrorDescriptionFactory.create(ex3);
 				return Response.status(ex3.getStatus()).type(MediaType.APPLICATION_JSON).entity(errorDesc3).build();
 			} else {

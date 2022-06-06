@@ -19,18 +19,14 @@ import org.pipservices3.commons.convert.JsonConverter;
 import org.pipservices3.commons.data.DataPage;
 import org.pipservices3.commons.data.IdGenerator;
 import org.pipservices3.commons.errors.ApplicationException;
-import org.pipservices3.commons.errors.ConfigException;
 import org.pipservices3.commons.errors.ErrorDescription;
 import org.pipservices3.commons.refer.Descriptor;
-import org.pipservices3.commons.refer.ReferenceException;
 import org.pipservices3.commons.refer.References;
-import org.pipservices3.commons.validate.ValidationException;
 import org.pipservices3.rpc.Dummy;
 import org.pipservices3.rpc.DummyController;
 import org.pipservices3.rpc.SubDummy;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -100,8 +96,6 @@ public class DummyRestServiceTest {
         assertNotNull(dummy);
         assertEquals(dummy.getContent(), _dummy2.getContent());
         assertEquals(dummy.getKey(), _dummy2.getKey());
-
-        var dummy2 = dummy;
 
         // Get all dummies
         var dummies = invoke(DataPage.class, HttpMethod.GET, "/dummies", null);

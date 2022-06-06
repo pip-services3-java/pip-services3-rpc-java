@@ -5,8 +5,6 @@ import org.pipservices3.commons.data.DataPage;
 import org.pipservices3.commons.data.FilterParams;
 import org.pipservices3.commons.data.PagingParams;
 import org.pipservices3.commons.errors.ApplicationException;
-import org.pipservices3.commons.errors.ApplicationExceptionFactory;
-import org.pipservices3.commons.errors.ErrorDescription;
 import org.pipservices3.rpc.Dummy;
 
 import java.util.HashMap;

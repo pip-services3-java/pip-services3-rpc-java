@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.pipservices3.commons.config.ConfigParams;
-import org.pipservices3.components.connect.ConnectionParams;
 import org.pipservices3.commons.errors.ApplicationException;
 
 public class HttpConnectionResolverTest {

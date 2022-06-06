@@ -71,7 +71,7 @@ public class DummyRestService extends RestService {
     private Response getOneById(ContainerRequestContext req) {
         var res = this._controller.getOneById(
                 this.getCorrelationId(req),
-                req.getUriInfo().getPathParameters().get("dummy_id").stream().findFirst().get()
+                req.getUriInfo().getPathParameters().get("dummy_id").get(0)
         );
         return this.sendResult(res);
     }

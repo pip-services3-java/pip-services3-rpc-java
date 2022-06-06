@@ -160,8 +160,10 @@ public class HttpRequestDetector {
      * @param req   an HTTP request to process.
      * @return the detected port number or <code>80</code> (if none are detected).
      */
-    public static int detectServerPort(ContainerRequestContext req){
+    public static int detectServerPort(ContainerRequestContext req) {
         return 0; // TODO: req haven't server address properties
     }
+
+    
 
 }

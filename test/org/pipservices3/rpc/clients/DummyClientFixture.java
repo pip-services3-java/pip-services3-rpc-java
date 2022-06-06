@@ -7,7 +7,6 @@ import org.pipservices3.commons.errors.*;
 import org.pipservices3.rpc.Dummy;
 import org.pipservices3.rpc.SubDummy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DummyClientFixture {

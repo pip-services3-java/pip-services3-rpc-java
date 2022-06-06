@@ -19,7 +19,6 @@ import org.pipservices3.commons.refer.References;
 import org.pipservices3.commons.run.Parameters;
 import org.pipservices3.rpc.Dummy;
 import org.pipservices3.rpc.DummyController;
-import org.pipservices3.rpc.services.HttpEndpoint;
 
 import java.util.ArrayList;
 

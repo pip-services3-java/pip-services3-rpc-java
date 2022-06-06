@@ -446,7 +446,7 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
         Inflector<ContainerRequestContext, Response> actionCurl = new Inflector<ContainerRequestContext, Response>() {
             @Override
             public Response apply(ContainerRequestContext req) {
-                // TODO: replace this on Jersey filters
+                // TODO: maybe replace this on Jersey filters
                 if (schema != null) {
                     var params = getAllParams(req);
                     var correlationId = getCorrelationId(req);
@@ -479,8 +479,6 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
             _interceptor = interceptor;
             _route = route;
         }
-
-        public InterceptorRegister(){}
 
         @Override
         public void filter(ContainerRequestContext ctx) throws IOException {
@@ -536,13 +534,13 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 
 
         pathParams.forEach((k, v) -> {
-            if (k != null)
-                params.put(k, v.stream().findFirst().isPresent() ? v.stream().findFirst() : null);
+            if (k != null && !k.isEmpty() && v != null && !v.stream().findFirst().orElse("").isEmpty())
+                params.put(k, v.stream().findFirst().get());
         });
 
         queryParams.forEach((k, v) -> {
-            if (k != null)
-                params.put(k, v.stream().findFirst().isPresent() ? v.stream().findFirst().get() : null);
+            if (k != null && !k.isEmpty() && v != null && !v.stream().findFirst().orElse("").isEmpty())
+                params.put(k, v.stream().findFirst().get());
         });
 
         return params;

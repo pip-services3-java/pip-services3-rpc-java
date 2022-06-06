@@ -7,7 +7,6 @@ import org.pipservices3.commons.errors.ApplicationException;
 import org.pipservices3.commons.refer.Descriptor;
 import org.pipservices3.rpc.Dummy;
 import org.pipservices3.rpc.IDummyController;
-import org.pipservices3.rpc.clients.DirectClient;
 
 public class DummyDirectClient extends DirectClient<IDummyController> implements IDummyClient {
 
