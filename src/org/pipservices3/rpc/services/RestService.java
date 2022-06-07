@@ -505,11 +505,17 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
     protected void registerOpenApiSpec(String content) {
         if (!this._swaggerEnable) return;
 
-        this.registerRoute(HttpMethod.GET, this._swaggerRoute, null, (req) -> Response.status(200)
-                .entity(content)
-                .header("Content-Length", content.length())
-                .header("Content-Type", "application/x-yaml")
-                .build());
+        this.registerRoute(HttpMethod.GET, this._swaggerRoute, null, new Inflector<ContainerRequestContext, Response>() {
+            @Override
+            public Response apply(ContainerRequestContext req) {
+                return Response.status(200)
+                        .entity(content)
+                        .header("Content-Length", content.length())
+                        .header("Content-Type", "application/x-yaml")
+                        .type(MediaType.APPLICATION_XML_TYPE)
+                        .build();
+            }
+        });
 
         if (this._swaggerService != null)
             this._swaggerService.registerOpenApiSpec(this._baseRoute, this._swaggerRoute);

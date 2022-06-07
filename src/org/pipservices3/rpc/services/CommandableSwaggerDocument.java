@@ -1,6 +1,7 @@
 package org.pipservices3.rpc.services;
 
 import jakarta.ws.rs.HttpMethod;
+import org.pipservices3.commons.commands.Command;
 import org.pipservices3.commons.commands.ICommand;
 import org.pipservices3.commons.config.ConfigParams;
 import org.pipservices3.commons.convert.TypeCode;
@@ -82,7 +83,7 @@ public class CommandableSwaggerDocument {
             var bodyData = this.createRequestBodyData(command);
             var responseData = this.createResponsesData();
             data.put(path, Map.of(
-                    HttpMethod.POST, Map.of(
+                    HttpMethod.POST.toLowerCase(), Map.of(
                             "tags", List.of(this.baseRoute),
                             "operationId", command.getName() != null ? command.getName() : "null",
                             "requestBody", bodyData != null ? bodyData : "null",
@@ -106,7 +107,16 @@ public class CommandableSwaggerDocument {
     }
 
     private Map<String, Object> createSchemaData(ICommand command) {
-        var schema = (ObjectSchema) PropertyReflector.getProperty(command, "_schema");
+        ObjectSchema schema = null;
+
+        try {
+            // Hack to get private field
+            var privateField = Command.class.getDeclaredField("_schema");
+            privateField.setAccessible(true);
+            schema = (ObjectSchema) privateField.get(command);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            // ignore
+        }
 
         if (schema == null || schema.getProperties() == null)
             return null;
