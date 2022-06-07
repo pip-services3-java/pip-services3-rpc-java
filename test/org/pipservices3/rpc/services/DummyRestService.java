@@ -1,5 +1,6 @@
 package org.pipservices3.rpc.services;
 
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import org.pipservices3.commons.config.ConfigParams;
@@ -133,7 +134,7 @@ public class DummyRestService extends RestService {
         this.registerInterceptor("/dummies$", this::incrementNumberOfCalls);
 
         this.registerRoute(
-                "get", "/dummies",
+                HttpMethod.GET, "/dummies",
                 new ObjectSchema()
                         .withOptionalProperty("skip", TypeCode.String)
                         .withOptionalProperty("take", TypeCode.String)
@@ -143,41 +144,41 @@ public class DummyRestService extends RestService {
         );
 
         this.registerRoute(
-                "get", "/dummies/check/correlation_id",
+                HttpMethod.GET, "/dummies/check/correlation_id",
                 new ObjectSchema(),
                 this::checkCorrelationId
         );
 
         this.registerRoute(
-                "get", "/dummies/{dummy_id}",
+                HttpMethod.GET, "/dummies/{dummy_id}",
                 new ObjectSchema()
                         .withRequiredProperty("dummy_id", TypeCode.String),
                 this::getOneById
         );
 
         this.registerRoute(
-                "post", "/dummies",
+                HttpMethod.POST, "/dummies",
                 new ObjectSchema()
                         .withRequiredProperty("body", new DummySchema()),
                 this::create
         );
 
         this.registerRoute(
-                "put", "/dummies",
+                HttpMethod.PUT, "/dummies",
                 new ObjectSchema()
                         .withRequiredProperty("body", new DummySchema()),
                 this::update
         );
 
         this.registerRoute(
-                "delete", "/dummies/{dummy_id}",
+                HttpMethod.DELETE, "/dummies/{dummy_id}",
                 new ObjectSchema()
                         .withRequiredProperty("dummy_id", TypeCode.String),
                 this::deleteById
         );
 
         this.registerRoute(
-                "post", "/dummies/raise_exception",
+                HttpMethod.POST, "/dummies/raise_exception",
                 new ObjectSchema(),
                 this::raiseException
         );

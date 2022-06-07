@@ -1,5 +1,6 @@
 package org.pipservices3.rpc.services;
 
+import jakarta.ws.rs.HttpMethod;
 import org.pipservices3.commons.commands.ICommand;
 import org.pipservices3.commons.config.ConfigParams;
 import org.pipservices3.commons.convert.TypeCode;
@@ -81,7 +82,7 @@ public class CommandableSwaggerDocument {
             var bodyData = this.createRequestBodyData(command);
             var responseData = this.createResponsesData();
             data.put(path, Map.of(
-                    "post", Map.of(
+                    HttpMethod.POST, Map.of(
                             "tags", List.of(this.baseRoute),
                             "operationId", command.getName() != null ? command.getName() : "null",
                             "requestBody", bodyData != null ? bodyData : "null",

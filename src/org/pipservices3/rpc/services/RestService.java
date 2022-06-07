@@ -1,5 +1,6 @@
 package org.pipservices3.rpc.services;
 
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -462,7 +463,7 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
 
         route = appendBaseRoute(route);
 
-        _endpoint.registerRoute(method, route, schema, action);
+        _endpoint.registerRoute(method.toUpperCase(), route, schema, action);
     }
 
     /**
@@ -504,7 +505,7 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
     protected void registerOpenApiSpec(String content) {
         if (!this._swaggerEnable) return;
 
-        this.registerRoute("get", this._swaggerRoute, null, (req) -> Response.status(200)
+        this.registerRoute(HttpMethod.GET, this._swaggerRoute, null, (req) -> Response.status(200)
                 .entity(content)
                 .header("Content-Length", content.length())
                 .header("Content-Type", "application/x-yaml")

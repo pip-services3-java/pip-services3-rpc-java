@@ -1,5 +1,6 @@
 package org.pipservices3.rpc.services;
 
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.process.Inflector;
@@ -87,7 +88,7 @@ public class HeartbeatRestService extends RestService {
 	 * Registers all service routes in HTTP endpoint.
 	 */
 	public void register() {
-		registerRoute("get", _route, new Inflector<ContainerRequestContext, Response>() {
+		registerRoute(HttpMethod.GET, _route, new Inflector<ContainerRequestContext, Response>() {
 			@Override
 			public Response apply(ContainerRequestContext request) {
 				return heartbeat(request);

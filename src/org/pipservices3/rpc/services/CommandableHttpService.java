@@ -1,5 +1,6 @@
 package org.pipservices3.rpc.services;
 
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.process.Inflector;
@@ -128,7 +129,7 @@ public class CommandableHttpService extends RestService {
         var commands = _commandSet.getCommands();
 
         for (ICommand command : commands) {
-            registerRoute("post", command.getName(), new Inflector<ContainerRequestContext, Response>() {
+            registerRoute(HttpMethod.POST, command.getName(), new Inflector<ContainerRequestContext, Response>() {
                 @Override
                 public Response apply(ContainerRequestContext request) {
                     return executeCommand(command, request);
