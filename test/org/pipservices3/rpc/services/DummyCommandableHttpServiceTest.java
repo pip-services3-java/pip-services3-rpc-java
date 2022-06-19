@@ -30,7 +30,7 @@ public class DummyCommandableHttpServiceTest {
     private static final ConfigParams restConfig = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3000,
+            "connection.port", 3002,
             "swagger.enable", "true"
     );
 

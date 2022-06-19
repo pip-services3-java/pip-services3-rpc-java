@@ -23,7 +23,7 @@ public class HeartbeatRestServiceTest {
         ConfigParams config = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", "3004"
+            "connection.port", 3005
         );
         _service = new HeartbeatRestService();
         _service.configure(config);

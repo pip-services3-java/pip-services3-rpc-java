@@ -36,7 +36,7 @@ public class DummyRestServiceTest {
     static ConfigParams restConfig = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3000,
+            "connection.port", 3004,
             "swagger.enable", "true",
             "swagger.content", "swagger yaml or json content"  // for test only
     );

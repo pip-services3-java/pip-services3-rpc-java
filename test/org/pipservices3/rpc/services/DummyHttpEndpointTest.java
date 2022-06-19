@@ -27,7 +27,7 @@ public class DummyHttpEndpointTest {
     private static final ConfigParams RestConfig = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3001
+            "connection.port", 3003
     );
 
     private DummyController _ctrl;

@@ -21,7 +21,7 @@ public class StatusRestServiceTest {
         ConfigParams config = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", "3005"
+            "connection.port", 3006
         );
         _service = new StatusRestService();
         _service.configure(config);
