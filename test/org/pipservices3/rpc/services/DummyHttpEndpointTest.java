@@ -24,10 +24,11 @@ import java.util.ArrayList;
 
 public class DummyHttpEndpointTest {
 
+    static int port = 3003;
     private static final ConfigParams RestConfig = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3003
+            "connection.port", port
     );
 
     private DummyController _ctrl;
@@ -118,7 +119,7 @@ public class DummyHttpEndpointTest {
         Client httpClient = ClientBuilder.newClient(clientConfig);
 
         String content = JsonConverter.toJson(entity);
-        Response response = httpClient.target("http://localhost:3001" + route)
+        Response response = httpClient.target("http://localhost:" + port + route)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(content, MediaType.APPLICATION_JSON));
 

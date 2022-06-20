@@ -33,10 +33,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class DummyRestServiceTest {
+
+    static int port = 3004;
     static ConfigParams restConfig = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3004,
+            "connection.port", port,
             "swagger.enable", "true",
             "swagger.content", "swagger yaml or json content"  // for test only
     );
@@ -171,7 +173,7 @@ public class DummyRestServiceTest {
             var serviceConfig = ConfigParams.fromTuples(
                     "connection.protocol", "http",
                     "connection.host", "localhost",
-                    "connection.port", 3000,
+                    "connection.port", port,
                     "swagger.enable", "true",
                     "swagger.path", filename  // for test only
             );
@@ -199,7 +201,7 @@ public class DummyRestServiceTest {
     }
 
     private <T> T invoke(Class<T> type, String method, String route, Object entity) {
-        try (Response response = rest.target("http://localhost:3000" + route)
+        try (Response response = rest.target("http://localhost:" + port + route)
                 .request(MediaType.APPLICATION_JSON).headers(headers)
                 .method(method, Entity.entity(entity, MediaType.APPLICATION_JSON))) {
             return response.readEntity(type);

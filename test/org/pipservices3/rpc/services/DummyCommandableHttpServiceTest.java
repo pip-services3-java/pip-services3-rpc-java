@@ -27,10 +27,11 @@ public class DummyCommandableHttpServiceTest {
     private final Dummy DUMMY2 = new Dummy(null, "Key 2", "Content 2",
             List.of(new SubDummy("SubKey 2", "SubContent 2")));
 
+    static int port = 3002;
     private static final ConfigParams restConfig = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3002,
+            "connection.port", port,
             "swagger.enable", "true"
     );
 
@@ -178,7 +179,7 @@ public class DummyCommandableHttpServiceTest {
         clientConfig.register(new JacksonFeature());
         Client httpClient = ClientBuilder.newClient(clientConfig);
 
-        var url = "http://localhost:3000";
+        var url = "http://localhost:" + port;
         var response = httpClient.target(url + "/dummy/swagger")
                 .request(MediaType.APPLICATION_JSON).get();
         var res = response.readEntity(String.class);
@@ -193,7 +194,7 @@ public class DummyCommandableHttpServiceTest {
         clientConfig.register(new JacksonFeature());
         Client httpClient = ClientBuilder.newClient(clientConfig);
 
-        var url = "http://localhost:3000";
+        var url = "http://localhost:" + port;
 
         // recreate service with new configuration
         _service.close(null);
@@ -228,7 +229,7 @@ public class DummyCommandableHttpServiceTest {
         clientConfig.register(new JacksonFeature());
         Client httpClient = ClientBuilder.newClient(clientConfig);
 
-        return httpClient.target("http://localhost:3000" + route)
+        return httpClient.target("http://localhost:" + port + route)
                 .request(MediaType.APPLICATION_JSON).headers(headers)
                 .post(Entity.entity(entity, MediaType.APPLICATION_JSON));
     }

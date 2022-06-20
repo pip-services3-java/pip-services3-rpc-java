@@ -18,12 +18,13 @@ import org.pipservices3.commons.errors.*;
 public class HeartbeatRestServiceTest {
     private HeartbeatRestService _service;
 
+	static int port = 3005;
 	@Before
 	public void setUp() throws ApplicationException {
         ConfigParams config = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3005
+            "connection.port", port
         );
         _service = new HeartbeatRestService();
         _service.configure(config);
@@ -50,7 +51,7 @@ public class HeartbeatRestServiceTest {
 		clientConfig.register(new JacksonFeature());
 		Client httpClient = ClientBuilder.newClient(clientConfig);
 	
-		Response response = httpClient.target("http://localhost:3004" + route)
+		Response response = httpClient.target("http://localhost:" + port + route)
 			.request(MediaType.APPLICATION_JSON)
 			.get();
 	

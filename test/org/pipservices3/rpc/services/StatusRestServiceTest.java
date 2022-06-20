@@ -16,12 +16,13 @@ import org.pipservices3.components.info.*;
 public class StatusRestServiceTest {
     private StatusRestService _service;
 
+    static int port = 3006;
 	@Before
 	public void setUp() throws ApplicationException {
         ConfigParams config = ConfigParams.fromTuples(
             "connection.protocol", "http",
             "connection.host", "localhost",
-            "connection.port", 3006
+            "connection.port", port
         );
         _service = new StatusRestService();
         _service.configure(config);
@@ -56,7 +57,7 @@ public class StatusRestServiceTest {
 		clientConfig.register(new JacksonFeature());
 		Client httpClient = ClientBuilder.newClient(clientConfig);
 	
-		Response response = httpClient.target("http://localhost:3005" + route)
+		Response response = httpClient.target("http://localhost:" + port + route)
 			.request(MediaType.APPLICATION_JSON)
 			.get();
 	
