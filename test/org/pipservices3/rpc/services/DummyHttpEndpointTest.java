@@ -122,7 +122,25 @@ public class DummyHttpEndpointTest {
         try (Response response = httpClient.target("http://localhost:" + port + route)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(content, MediaType.APPLICATION_JSON))) {
-            return response.readEntity(type);
+            try {
+                return response.readEntity(type);
+            } catch (Exception ex) {
+                System.err.println("EXCEEEEEEEEEEEEEEEEEEEEEEEEEEEEPT");
+                System.err.println(ex.getMessage());
+
+                StackTraceElement[] ste = ex.getStackTrace();
+                StringBuilder builder = new StringBuilder();
+                if (ste != null) {
+                    for (StackTraceElement stackTraceElement : ste) {
+                        if (builder.length() > 0)
+                            builder.append(" ");
+                        builder.append(stackTraceElement.toString());
+                    }
+                }
+
+                System.err.println(builder.toString());
+                throw ex;
+            }
         }
     }
 
