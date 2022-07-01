@@ -257,6 +257,8 @@ public class DummyCommandableHttpServiceTest {
                 }
 
                 System.err.println(builder.toString());
+                System.err.println("--------------------------------------------------------");
+                System.err.println(response.readEntity(String.class));
                 throw ex;
             }
         }
