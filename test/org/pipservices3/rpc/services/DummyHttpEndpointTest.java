@@ -119,12 +119,11 @@ public class DummyHttpEndpointTest {
         Client httpClient = ClientBuilder.newClient(clientConfig);
 
         String content = JsonConverter.toJson(entity);
-        Response response = httpClient.target("http://localhost:" + port + route)
+        try (Response response = httpClient.target("http://localhost:" + port + route)
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(content, MediaType.APPLICATION_JSON));
-
-        return response.readEntity(type);
-
+                .post(Entity.entity(content, MediaType.APPLICATION_JSON))) {
+            return response.readEntity(type);
+        }
     }
 
 }

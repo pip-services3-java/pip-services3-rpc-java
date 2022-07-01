@@ -472,8 +472,8 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
 
     @Provider
     private static class InterceptorRegister implements ContainerRequestFilter {
-        private Function<ContainerRequestContext, ?> _interceptor = null;
-        private String _route = "";
+        private final Function<ContainerRequestContext, ?> _interceptor;
+        private final String _route;
 
         public InterceptorRegister(Function<ContainerRequestContext, ?> interceptor, String route) {
             _interceptor = interceptor;

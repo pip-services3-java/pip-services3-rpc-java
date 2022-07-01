@@ -181,39 +181,32 @@ public class CommandableSwaggerDocument {
                 typeCode = TypeCode.Object;
             }
 
-            switch (typeCode) {
-                case Integer:
-                    return Map.of(
-                            "type", "integer",
-                            "format", "int32"
-                    );
-                case Long:
-                    return Map.of(
-                            "type", "number",
-                            "format", "int64"
-                    );
-                case Float:
-                    return Map.of(
-                            "type", "number",
-                            "format", "float"
-                    );
-                case Double:
-                    return Map.of(
-                            "type", "number",
-                            "format", "double"
-                    );
-                case DateTime:
-                    return Map.of(
-                            "type", "string",
-                            "format", "date-time"
-                    );
-                case Boolean:
-                    return Map.of(
-                            "type", "boolean"
-                    );
-                default:
-                    return Map.of("type", TypeConverter.toString(typeCode));
-            }
+            return switch (typeCode) {
+                case Integer -> Map.of(
+                        "type", "integer",
+                        "format", "int32"
+                );
+                case Long -> Map.of(
+                        "type", "number",
+                        "format", "int64"
+                );
+                case Float -> Map.of(
+                        "type", "number",
+                        "format", "float"
+                );
+                case Double -> Map.of(
+                        "type", "number",
+                        "format", "double"
+                );
+                case DateTime -> Map.of(
+                        "type", "string",
+                        "format", "date-time"
+                );
+                case Boolean -> Map.of(
+                        "type", "boolean"
+                );
+                default -> Map.of("type", TypeConverter.toString(typeCode));
+            };
         }
     }
 

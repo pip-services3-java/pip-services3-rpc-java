@@ -89,7 +89,7 @@ public class DummyCommandableHttpServiceTest {
 
         // Get all dummies
         DataPage<Dummy> dummies = invoke(
-                new GenericType<DataPage<Dummy>>() {
+                new GenericType<>() {
                 },
                 "/dummy/get_dummies",
                 null
@@ -153,7 +153,7 @@ public class DummyCommandableHttpServiceTest {
     }
 
     @Test
-    public void testCheckCorrelationId() throws Exception {
+    public void testCheckCorrelationId() {
         // check transmit correllationId over params
         String result = invoke(String.class,
                 "/dummy/check_correlation_id?correlation_id=test_cor_id",
@@ -239,18 +239,23 @@ public class DummyCommandableHttpServiceTest {
     }
 
     private static <T> T invoke(Class<T> type, String route, Object entity) {
-        Response response = performInvoke(route, entity);
-        return response.readEntity(type);
+        try (Response response = performInvoke(route, entity)) {
+            return response.readEntity(type);
+        }
+
     }
 
     private static <T> T invoke(Class<T> type, String route, Object entity, MultivaluedMap<String, Object> headers) {
-        Response response = performInvoke(route, entity, headers);
-        return response.readEntity(type);
+        try (Response response = performInvoke(route, entity, headers)) {
+            return response.readEntity(type);
+        }
+
     }
 
-    private static <T> T invoke(GenericType<T> type, String route, Object entity) throws Exception {
-        Response response = performInvoke(route, entity);
-        return response.readEntity(type);
+    private static <T> T invoke(GenericType<T> type, String route, Object entity) {
+        try (Response response = performInvoke(route, entity)) {
+            return response.readEntity(type);
+        }
     }
 
 }

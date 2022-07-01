@@ -5,11 +5,13 @@ import org.pipservices3.commons.convert.StringConverter;
 import org.pipservices3.commons.data.FilterParams;
 import org.pipservices3.commons.data.PagingParams;
 
+import java.io.Serial;
 import java.util.Map;
 
 //import com.sun.jersey.core.util.*;
 
 public class RestQueryParams extends MultivaluedStringMap {
+	@Serial
 	private static final long serialVersionUID = -903917330561942092L;
 
 	public RestQueryParams() {

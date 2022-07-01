@@ -368,7 +368,7 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
             throw new InvalidStateException(correlationId, "NOT_OPENED", "Client is not opened");
         }
 
-        Response response = null;
+        Response response;
         response = Failsafe.with(_retryPolicy).get(
                 () -> _client.target(uri).request(mediaType).headers(_headers).method(method, body));
 
@@ -378,7 +378,7 @@ public class RestClient implements IOpenable, IConfigurable, IReferenceable {
         }
 
         if (response.getStatus() >= 400) {
-            ErrorDescription errorObject = null;
+            ErrorDescription errorObject;
             try {
                 errorObject = response.readEntity(ErrorDescription.class);
             } catch (Exception ex) {
