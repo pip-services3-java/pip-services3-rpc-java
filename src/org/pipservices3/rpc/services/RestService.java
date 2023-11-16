@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
+
 /**
  * Abstract service that receives remove calls via HTTP/REST protocol.
  * <p>
@@ -475,8 +476,13 @@ public abstract class RestService implements IOpenable, IConfigurable, IReferenc
      * @param authorize an authorization interceptor
      * @param action    an action function that is called when operation is invoked.
      */
-    protected void registerRouteWithAuth(String method, String route, Schema schema, Function authorize, Function action) {
-        //TODO
+    protected void registerRouteWithAuth(String method, String route, Schema schema,
+                                         AuthorizeFunction<ContainerRequestContext, Inflector<ContainerRequestContext, Response>, Response> authorize,
+                                         Inflector<ContainerRequestContext, Response> action) {
+        if (this._endpoint == null)
+            return;
+        route = this.appendBaseRoute(route);
+        this._endpoint.registerRouteWithAuth(method.toUpperCase(), route, schema, authorize, action);
     }
 
     /**

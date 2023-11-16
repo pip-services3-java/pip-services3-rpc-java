@@ -466,8 +466,11 @@ public class HttpEndpoint implements IOpenable, IConfigurable, IReferenceable {
         this.registerRoute(method, route, actionCurl);
     }
 
-    public void registerRouteWithAuth(String method, String route, Schema schema, Function authorize, Function action) {
-        // TODO
+    public void registerRouteWithAuth(String method, String route, Schema schema,
+                                      AuthorizeFunction<ContainerRequestContext, Inflector<ContainerRequestContext, Response>, Response> authorize,
+                                      Inflector<ContainerRequestContext, Response> action) {
+
+        this.registerRoute(method, route, (req) -> authorize.apply(req, action));
     }
 
     @Provider
